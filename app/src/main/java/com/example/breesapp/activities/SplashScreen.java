@@ -9,6 +9,7 @@ import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.breesapp.R;
+import com.example.breesapp.databinding.OnboardFirstBinding;
 
 public class SplashScreen extends AppCompatActivity {
 
@@ -17,7 +18,7 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-/*        SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -25,12 +26,12 @@ public class SplashScreen extends AppCompatActivity {
                 Intent intent= null;
                 if (prefs.getAll().isEmpty()){
                     intent = new Intent(SplashScreen.this,
-                            OnboardingActivity.class);
+                            onBoardingFirst.class);
                 }
-                else if(prefs.getAll().get("firstStart").equals("Login")) {
+/*                else if(prefs.getAll().get("firstStart").equals("Login")) {
                     intent = new Intent(SplashScreen.this,
                             Login.class);
-                }
+                }*/
                 else if (prefs.getAll().get("firstStart").equals("Authorized")) {
                     intent = new Intent(SplashScreen.this,
                             MainActivity.class);
@@ -39,6 +40,6 @@ public class SplashScreen extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }, 3000);*/
+        }, 3000);
     }
 }

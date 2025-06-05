@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BreesApp"
         tools:targetApi="31">
+        <activity android:name=".activities.onBoardingFirst"
+            android:exported="true"/>
+        <activity android:name=".activities.onBoardingSecond"
+            android:exported="true"/>
+        <activity android:name=".activities.onBoardingThird"
+            android:exported="true"/>
         <activity
             android:name=".activities.SplashScreen"
             android:exported="true"

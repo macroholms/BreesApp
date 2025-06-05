@@ -5,6 +5,14 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_profile">Profile</string>
     <string name="AppName">Brees</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="onb_t_1">Gain statistics of your money</string>
+    <string name="onb_t_2">Providing statistics on deposits and transfers per month</string>
+    <string name="onb_t_3">Gain total control of your money</string>
+    <string name="onb_t_4">Track your transaction easily, with  financial report</string>
+    <string name="onb_t_5">Exchange of emails</string>
+    <string name="onb_t_6">Fast and easy exchange of letters between users.</string>
+    <string name="Cont">Next</string>
+    <string name="get_started">Get started</string>
+    <string name="skip">Skip</string>
+    <string name="hello_blank_fragment">gg</string>
 </resources>
