@@ -15,4 +15,16 @@
     <string name="get_started">Get started</string>
     <string name="skip">Skip</string>
     <string name="hello_blank_fragment">gg</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="welcome_brees">Welcome to Brees</string>
+    <string name="complete_the_sign_up">Complete the sign up to get started</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="terms_text">By signing up, you agree to the <a href="https://www.freeprivacypolicy.com/live/0320d475-888f-4f38-94f8-7bf737c2d0a7">Terms of \nService</a> and <a href="https://www.freeprivacypolicy.com/live/0320d475-888f-4f38-94f8-7bf737c2d0a7">Privacy Policy</a></string>
+    <string name="reg">Register</string>
+    <string name="login">Login</string>
+    <string name="forgot_pin">Forgot PIN code?</string>
+    <string name="pin_en">Enter PIN</string>
+    <string name="conf_pin">Confirm PIN</string>
 </resources>

@@ -12,4 +12,11 @@
     <color name="lbg">#4C36ED</color>
     <color name="lmain">#6754F0</color>
     <color name="gray">#888888</color>
+    <color name="dpurple">#240F51</color>
+    <color name="dgray">#292B2D</color>
+    <color name="gray_bg">#F5F7FF</color>
+    <color name="alphamain">#1A2C14DD</color>
+    <color name="transperent">#00DDDDDD</color>
+    <color name="red">#E31D40</color>
+    <color name="green">#1ADE5D</color>
 </resources>

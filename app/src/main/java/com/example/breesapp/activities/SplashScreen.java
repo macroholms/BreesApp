@@ -9,7 +9,6 @@ import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.breesapp.R;
-import com.example.breesapp.databinding.OnboardFirstBinding;
 
 public class SplashScreen extends AppCompatActivity {
 
@@ -26,7 +25,7 @@ public class SplashScreen extends AppCompatActivity {
                 Intent intent= null;
                 if (prefs.getAll().isEmpty()){
                     intent = new Intent(SplashScreen.this,
-                            onBoardingFirst.class);
+                            OnBoardingActivity.class);
                 }
 /*                else if(prefs.getAll().get("firstStart").equals("Login")) {
                     intent = new Intent(SplashScreen.this,

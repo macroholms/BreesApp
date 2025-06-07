@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="24dp"
+        android:layout_weight="3">
+
+        <TextView
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/titleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="26sp"
+            android:fontFamily="@font/inter_28pt_bold"
+            android:textColor="@color/dpurple"
+            android:layout_marginBottom="24dp"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+            <com.chaos.view.PinView
+                android:id="@+id/pinViewBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:hideLineWhenFilled="false"
+                android:layout_gravity="center_horizontal"
+                app:itemCount="4"
+                android:text="1111"
+                android:inputType="numberPassword"
+                app:viewType="line"/>
+            <com.chaos.view.PinView
+                android:id="@+id/pinView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:hideLineWhenFilled="false"
+                android:layout_gravity="center_horizontal"
+                app:itemCount="4"
+                android:inputType="numberPassword"
+                app:viewType="line"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_weight="6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp">
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <Button
+                android:layout_weight="1"
+                android:id="@+id/btn1"
+                style="@style/TransparentButton"
+                android:text="1"
+                android:onClick="number_click"/>
+
+            <Button
+                android:layout_weight="1"
+                android:id="@+id/btn2"
+                style="@style/TransparentButton"
+                android:onClick="number_click"
+                android:text="2"/>
+
+            <Button
+                android:layout_weight="1"
+                android:id="@+id/btn3"
+                android:onClick="number_click"
+                style="@style/TransparentButton"
+                android:text="3"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <Button
+                android:layout_weight="1"
+                android:onClick="number_click"
+                android:id="@+id/btn4"
+                style="@style/TransparentButton"
+                android:text="4"/>
+
+            <Button
+                android:layout_weight="1"
+                android:onClick="number_click"
+                android:id="@+id/btn5"
+                style="@style/TransparentButton"
+                android:text="5"/>
+
+            <Button
+                android:layout_weight="1"
+                android:onClick="number_click"
+                android:id="@+id/btn6"
+                style="@style/TransparentButton"
+                android:text="6"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <Button
+                android:layout_weight="1"
+                android:onClick="number_click"
+                android:id="@+id/btn7"
+                style="@style/TransparentButton"
+                android:text="7"/>
+
+            <Button
+                android:layout_weight="1"
+                android:onClick="number_click"
+                android:id="@+id/btn8"
+                style="@style/TransparentButton"
+                android:text="8"/>
+
+            <Button
+                android:layout_weight="1"
+                android:onClick="number_click"
+                android:id="@+id/btn9"
+                style="@style/TransparentButton"
+                android:text="9"/>
+        </LinearLayout>
+
+        <!-- Четвертый ряд (пусто, 0, удалить) -->
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="111"
+                style="@style/TransparentButton"
+                android:visibility="invisible"/>
+
+            <Button
+                android:layout_weight="1"
+                android:id="@+id/btn0"
+                android:onClick="number_click"
+                style="@style/TransparentButton"
+                android:text="0"/>
+
+            <ImageButton
+                android:id="@+id/btnDelete"
+                android:layout_weight="1"
+                style="@style/TransparentButton"
+                android:onClick="backspace_click"
+                android:src="@drawable/ic_backspace"
+                android:layout_marginLeft="16dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/forg_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        style="@style/TransparentButton"
+        android:textSize="14sp"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1"
+        android:textColor="@color/main"
+        android:fontFamily="@font/inter_28pt_regular"/>
+
+</LinearLayout>
