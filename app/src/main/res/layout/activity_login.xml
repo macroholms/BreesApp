@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.RegistrationActivity"
+    tools:context=".activities.LoginActivity"
     android:background="@drawable/bg_lgray">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/sign_up"
+        android:text="@string/login"
         android:textColor="@color/black"
         android:fontFamily="@font/inter_28pt_regular"
         android:textAlignment="center"
@@ -28,7 +29,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="20dp"
         android:layout_marginTop="50dp"
-        android:text="@string/welcome_brees"
+        android:text="@string/welcome_back_brees"
         android:textSize="24sp"
         android:fontFamily="@font/inter_28pt_bold"
         android:textColor="@color/dpurple"
@@ -40,28 +41,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:fontFamily="@font/inter_28pt_regular"
-        android:text="@string/complete_the_sign_up"
+        android:text="@string/back_fill"
         android:textColor="@color/dgray"
         app:layout_constraintStart_toStartOf="@id/welcome"
         app:layout_constraintTop_toBottomOf="@id/welcome" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/NameTextField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/white_inp_box"
-        android:hint="@string/name"
-        android:layout_marginHorizontal="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/text_cont"
-        android:paddingHorizontal="10dp"
-        android:layout_marginTop="30dp">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/NameTextField1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/EmailTextField"
@@ -70,12 +53,11 @@
         android:background="@drawable/white_inp_box"
         android:hint="@string/email"
         android:layout_marginHorizontal="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/NameTextField"
+        app:layout_constraintTop_toBottomOf="@+id/text_cont"
         android:paddingHorizontal="10dp"
         android:layout_marginTop="15dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/EmailTextField1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
@@ -95,72 +77,52 @@
         app:passwordToggleTint="@color/main">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/PasswordTextField1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/ConfPasswordTextField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/white_inp_box"
-        android:hint="@string/confirm_password"
-        android:layout_marginHorizontal="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/PasswordTextField"
-        android:paddingHorizontal="10dp"
-        android:layout_marginTop="15dp"
-        app:passwordToggleEnabled="true"
-        app:passwordToggleTint="@color/main">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/ConfPasswordTextField1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"/>
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <CheckBox
-        android:id="@+id/check_terms"
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/ConfPasswordTextField"
-        app:layout_constraintStart_toStartOf="@id/ConfPasswordTextField"
+        app:layout_constraintTop_toBottomOf="@id/PasswordTextField"
+        app:layout_constraintEnd_toEndOf="@id/PasswordTextField"
         android:layout_marginTop="25dp"
-        android:text="@string/terms_text"
+        style="@style/TransparentButton"
+        android:text="@string/forgot_password"
+        android:textSize="14sp"
+        android:textAllCaps="false"
+        android:textColor="@color/main"
         android:layout_marginEnd="20dp"
         android:fontFamily="@font/inter_28pt_regular"/>
 
     <Button
         android:id="@+id/reg_btn"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
+        android:layout_width="110dp"
+        android:layout_height="30dp"
         android:text="@string/reg"
         android:textAllCaps="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@drawable/btn_style"
-        android:textColor="@color/white"
-        android:fontFamily="@font/inter_28pt_regular"
-        android:layout_marginStart="20dp"
-        android:layout_marginBottom="30dp"
-        />
-    
-    <Button
-        android:id="@+id/login_btn"
-        android:layout_width="110dp"
-        android:layout_height="30dp"
-        android:text="@string/login"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/reg_btn_style"
         android:fontFamily="@font/inter_28pt_regular"
         android:textColor="@color/main"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="45dp"/>
+
+    <Button
+        android:id="@+id/login_btn"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:text="@string/login"
+        android:textAllCaps="false"
+        android:background="@drawable/btn_style"
+        android:textColor="@color/white"
+        android:fontFamily="@font/inter_28pt_regular"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="45dp" />
-    
+        android:layout_marginBottom="30dp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

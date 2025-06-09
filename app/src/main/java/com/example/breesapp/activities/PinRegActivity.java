@@ -118,6 +118,10 @@ public class PinRegActivity extends AppCompatActivity {
             }
             else{
                 shakeView();
+                password = "";
+                confirm = false;
+                confPass = "";
+                pinView.setText(password);
             }
         }
     }
@@ -150,7 +154,7 @@ public class PinRegActivity extends AppCompatActivity {
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(i);
             finish();
-        }, 250);
+        }, 100);
     }
 
     private void shakeView() {

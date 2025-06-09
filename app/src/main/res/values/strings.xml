@@ -27,4 +27,12 @@
     <string name="forgot_pin">Forgot PIN code?</string>
     <string name="pin_en">Enter PIN</string>
     <string name="conf_pin">Confirm PIN</string>
+    <string name="welcome_back_brees">Welcome back</string>
+    <string name="back_fill">Hey you’re back, fill in your details to get back in</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="password_lenght_error">Password must be more than 8 characters and less than 20</string>
+    <string name="password_match_error">Passwords do not match</string>
+    <string name="terms_error">Please confirm your agreement to the terms of service and privacy policy</string>
+    <string name="empty_error">All fields must be filled in</string>
 </resources>
