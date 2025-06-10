@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.activity)
+    implementation("com.google.code.gson:gson:2.13.1")
     implementation("io.github.chaosleung:pinview:1.4.4")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     testImplementation(libs.junit)
