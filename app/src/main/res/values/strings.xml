@@ -39,10 +39,11 @@
     <string name="recovery1">Enter your email and we’ll send you a code to reset your password.</string>
     <string name="Continue">Continue</string>
     <string name="recovery_t_1">Your email is on the way</string>
-    <string name="recovery_text">Enter the verification code we just sent to your email:</string>
+    <string name="recovery_text">Enter the verification code we just sent to your email: </string>
     <string name="recover_title">OTP Verification</string>
     <string name="didn_t_receive_code">Didn’t receive code?</string>
     <string name="resend">Resend</string>
     <string name="password_recovery">Password recovery</string>
     <string name="set_your_password">Set your password</string>
+    <string name="recovery_2_text">Check your email test@test.com and follow the instructions to reset your password</string>
 </resources>

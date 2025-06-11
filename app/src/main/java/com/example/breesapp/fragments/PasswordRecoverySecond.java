@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.breesapp.R;
@@ -73,6 +74,10 @@ public class PasswordRecoverySecond extends Fragment {
         }
 
         final String email = arguments.getString("email");
+
+        TextView text = view.findViewById(R.id.recovery_text_email);
+
+        text.setText(text.getText().toString().replace("test@test.com", email));
 
         Button btn = view.findViewById(R.id.recovery_second_btn);
         btn.setOnClickListener(v -> {
