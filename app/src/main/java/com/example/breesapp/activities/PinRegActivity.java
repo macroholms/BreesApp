@@ -22,9 +22,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.chaos.view.PinView;
 import com.example.breesapp.R;
+import com.example.breesapp.classes.SessionManager;
 
 public class PinRegActivity extends AppCompatActivity {
 
+    private SessionManager sessionManager = new SessionManager(this);
     private TextView title;
     private Button forgot;
     private String password = "";
@@ -55,7 +57,7 @@ public class PinRegActivity extends AppCompatActivity {
         pinView2.setLineColor(
                 ResourcesCompat.getColor(getResources(), R.color.transperent, getTheme()));
 
-        if (isPinSet()){
+        if (sessionManager.isPinSet()){
             init_reg();
         }
     }
@@ -92,15 +94,15 @@ public class PinRegActivity extends AppCompatActivity {
     }
 
     public void check_pin(){
-        if (!isPinSet() && !confirm){
+        if (!sessionManager.isPinSet() && !confirm){
             pinView.setText("");
             title.setText(getResources().getString(R.string.conf_pin));
             confirm = true;
             confPass = password;
             password = "";
-        } else if (!isPinSet() && confirm) {
+        } else if (!sessionManager.isPinSet() && confirm) {
             if (password.equals(confPass)){
-                savePin(password);
+                sessionManager.savePin(password);
                 toMain();
             }
             else{
@@ -113,7 +115,7 @@ public class PinRegActivity extends AppCompatActivity {
             }
         }
         else{
-            if (checkPin(password)){
+            if (sessionManager.getPin().equals(password)){
                 toMain();
             }
             else{
@@ -124,24 +126,6 @@ public class PinRegActivity extends AppCompatActivity {
                 pinView.setText(password);
             }
         }
-    }
-
-    private void savePin(String pin) {
-        getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-                .edit()
-                .putString(PIN_KEY, pin)
-                .apply();
-    }
-
-    private boolean isPinSet() {
-        return getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-                .contains(PIN_KEY);
-    }
-
-    private boolean checkPin(String pin) {
-        String savedPin = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-                .getString(PIN_KEY, "");
-        return savedPin.equals(pin);
     }
 
     private void toMain(){

@@ -6,9 +6,11 @@ import android.content.SharedPreferences;
 public class DataBinding {
 
     private static SharedPreferences sharedPreferences;
+    private static SharedPreferences sharedPreferences2;
 
     public static void init(Context context) {
         sharedPreferences = context.getSharedPreferences("auth_data", Context.MODE_PRIVATE);
+        sharedPreferences2 = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
     }
 
     public static void saveBearerToken(String token) {
@@ -25,6 +27,21 @@ public class DataBinding {
         sharedPreferences.edit().putString("user_uuid", uuid).apply();
     }
 
+    public static void start(){
+        sharedPreferences2.edit().putString("status", "bookAll");
+    }
+
+    public static void logined(){
+        sharedPreferences2.edit().putString("status", "logined");
+    }
+
+    public static void unlogined(){
+        sharedPreferences2.edit().putString("status", "unlogined");
+    }
+
+    public static String getStatus(){
+        return sharedPreferences2.getString("status", null);
+    }
 
     public static String getUuidUser() {
         return sharedPreferences.getString("user_uuid", null);

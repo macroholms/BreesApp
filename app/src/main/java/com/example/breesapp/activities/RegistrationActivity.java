@@ -30,9 +30,6 @@ public class RegistrationActivity extends AppCompatActivity {
     TextInputEditText Name, Email, Password, ConfPassword;
     CheckBox Terms;
     TextInputLayout Pass;
-    private static final String PREFS_NAME = "UserPrefs";
-    private static final String USER_NAME_KEY = "user_name";
-    private static final String USER_EMAIL_KEY = "user_email";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +52,15 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Registration();
+            }
+        });
+
+        LoginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(),
+                        LoginActivity.class));
+                finish();
             }
         });
     }

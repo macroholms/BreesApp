@@ -7,6 +7,8 @@ import com.example.breesapp.models.LogRegRequest;
 import com.example.breesapp.models.ProfileUpdate;
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -118,6 +120,119 @@ public class SupabaseClient {
         });
     }
 
+    public void sendPasswordResetOtp(String email, final SBC_Callback callback) {
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("email", email);
+
+            RequestBody body = RequestBody.create(
+                    jsonObject.toString(),
+                    MediaType.parse("application/json")
+            );
+
+            Request request = new Request.Builder()
+                    .url(DOMAIN_NAME + AUTH_PATH + "recover")
+                    .post(body)
+                    .addHeader("apikey", API_KEY)
+                    .addHeader("Content-Type", "application/json")
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    callback.onFailure(e);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        callback.onResponse(response.body().string());
+                    } else {
+                        callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
+                    }
+                }
+            });
+        } catch (Exception e) {
+            callback.onFailure(new IOException("Ошибка создания запроса: " + e.getMessage()));
+        }
+    }
+
+    public void verifyPasswordResetOtp(String email, String otp, final SBC_Callback callback) {
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("email", email);
+            jsonObject.put("token", otp);
+            jsonObject.put("type", "recovery");
+
+            RequestBody body = RequestBody.create(
+                    jsonObject.toString(),
+                    MediaType.parse("application/json")
+            );
+
+            Request request = new Request.Builder()
+                    .url(DOMAIN_NAME + AUTH_PATH + "verify")
+                    .post(body)
+                    .addHeader("apikey", API_KEY)
+                    .addHeader("Content-Type", "application/json")
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    callback.onFailure(e);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        callback.onResponse(response.body().string());
+                    } else {
+                        callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
+                    }
+                }
+            });
+        } catch (Exception e) {
+            callback.onFailure(new IOException("Ошибка создания запроса: " + e.getMessage()));
+        }
+    }
+
+    public void updateUserPassword(String newPassword, final SBC_Callback callback) {
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("password", newPassword);
+
+            RequestBody body = RequestBody.create(
+                    jsonObject.toString(),
+                    MediaType.parse("application/json")
+            );
+
+            Request request = new Request.Builder()
+                    .url(DOMAIN_NAME + AUTH_PATH + "user")
+                    .method("PUT", body)
+                    .addHeader("apikey", API_KEY)
+                    .addHeader("Authorization", DataBinding.getBearerToken())
+                    .addHeader("Content-Type", "application/json")
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    callback.onFailure(e);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        callback.onResponse(response.body().string());
+                    } else {
+                        callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
+                    }
+                }
+            });
+        } catch (Exception e) {
+            callback.onFailure(new IOException("Ошибка создания запроса: " + e.getMessage()));
+        }
+    }
 
     public interface SBC_Callback {
         void onFailure(IOException e);

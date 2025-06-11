@@ -19,4 +19,5 @@
     <color name="transperent">#00DDDDDD</color>
     <color name="red">#E31D40</color>
     <color name="green">#1ADE5D</color>
+    <color name="lgray">#80807f</color>
 </resources>

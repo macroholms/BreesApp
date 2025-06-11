@@ -35,4 +35,14 @@
     <string name="password_match_error">Passwords do not match</string>
     <string name="terms_error">Please confirm your agreement to the terms of service and privacy policy</string>
     <string name="empty_error">All fields must be filled in</string>
+    <string name="forgot_pass">Forgot Password</string>
+    <string name="recovery1">Enter your email and we’ll send you a code to reset your password.</string>
+    <string name="Continue">Continue</string>
+    <string name="recovery_t_1">Your email is on the way</string>
+    <string name="recovery_text">Enter the verification code we just sent to your email:</string>
+    <string name="recover_title">OTP Verification</string>
+    <string name="didn_t_receive_code">Didn’t receive code?</string>
+    <string name="resend">Resend</string>
+    <string name="password_recovery">Password recovery</string>
+    <string name="set_your_password">Set your password</string>
 </resources>
