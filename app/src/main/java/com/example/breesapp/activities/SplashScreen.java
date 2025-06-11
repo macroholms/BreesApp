@@ -18,6 +18,8 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
+        DataBinding.init(getApplicationContext());
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -25,14 +27,14 @@ public class SplashScreen extends AppCompatActivity {
                 if (DataBinding.getStatus() == null){
                     intent = new Intent(SplashScreen.this,
                             OnBoardingActivity.class);
-                }
-                else if(DataBinding.getStatus().equals("bookAll")) {
-                    intent = new Intent(SplashScreen.this,
-                            LoginActivity.class);
-                }
-                else if (DataBinding.getStatus().equals("logined")) {
+                }else if (DataBinding.getStatus().equals("logined")) {
                     intent = new Intent(SplashScreen.this,
                             PinRegActivity.class);
+                }
+                else if(DataBinding.getStatus().equals("bookAll") ||
+                        DataBinding.getStatus().equals("unlogined")) {
+                    intent = new Intent(SplashScreen.this,
+                            LoginActivity.class);
                 }
 
                 startActivity(intent);

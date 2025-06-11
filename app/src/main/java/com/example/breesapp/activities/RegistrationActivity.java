@@ -123,8 +123,8 @@ public class RegistrationActivity extends AppCompatActivity {
                                                     runOnUiThread(() -> {
                                                         Log.d("updateProfile:onResponse", response);
                                                         Toast.makeText(RegistrationActivity.this, "Профиль обновлён", Toast.LENGTH_SHORT).show();
-
-                                                        startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
+                                                        DataBinding.logined();
+                                                        startActivity(new Intent(RegistrationActivity.this, PinRegActivity.class));
                                                         finish();
                                                     });
                                                 }

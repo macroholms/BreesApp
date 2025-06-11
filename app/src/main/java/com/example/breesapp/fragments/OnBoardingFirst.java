@@ -11,6 +11,7 @@ import android.widget.Button;
 
 import com.example.breesapp.R;
 import com.example.breesapp.activities.OnBoardingActivity;
+import com.example.breesapp.models.DataBinding;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -73,6 +74,7 @@ public class OnBoardingFirst extends Fragment {
         });
 
         btnSkip.setOnClickListener(v -> {
+            DataBinding.start();
             if (getActivity() instanceof OnBoardingActivity) {
                 ((OnBoardingActivity) getActivity()).goToRegistration();
             }

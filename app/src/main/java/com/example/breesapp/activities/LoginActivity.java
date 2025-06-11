@@ -16,6 +16,7 @@ import com.example.breesapp.R;
 import com.example.breesapp.classes.SessionManager;
 import com.example.breesapp.classes.SupabaseClient;
 import com.example.breesapp.models.AuthResponse;
+import com.example.breesapp.models.DataBinding;
 import com.example.breesapp.models.LogRegRequest;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
@@ -95,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
                             auth.getAccess_token(),
                             auth.getUser().getId()
                     );
-
+                    DataBinding.logined();
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
                     finish();
                 });

@@ -1,11 +1,17 @@
 package com.example.breesapp.classes;
 
+import android.content.Context;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.example.breesapp.models.DataBinding;
 import com.example.breesapp.models.LogRegRequest;
 import com.example.breesapp.models.ProfileUpdate;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.json.JSONObject;
 
@@ -18,6 +24,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class SupabaseClient {
     public static String REST_PATH = "rest/v1/";
@@ -157,7 +164,7 @@ public class SupabaseClient {
         }
     }
 
-    public void verifyPasswordResetOtp(String email, String otp, final SBC_Callback callback) {
+    public void verifyPasswordResetOtp(Context context, String email, String otp, final SBC_Callback callback) {
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("email", email);
@@ -185,6 +192,27 @@ public class SupabaseClient {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (response.isSuccessful()) {
+                        try (ResponseBody responseBody = response.body()){
+                            String responseBodyString = response.body().string();
+
+                            try {
+                                JsonElement jsonElement = new JsonParser().parse(responseBodyString);
+
+                                Gson gson = new Gson();
+                                String json = gson.toJson(jsonElement);
+
+                                JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+
+                                String accessToken = jsonObject.get("access_token").getAsString();
+
+                                SessionManager sessionManager = new SessionManager(context);
+                                sessionManager.setBearer(accessToken);
+                            } catch (Exception e) {
+                                Log.e("JSON_PARSE_ERROR", "Ошибка при парсинге JSON", e);
+                            }
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                         callback.onResponse(response.body().string());
                     } else {
                         callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
@@ -196,7 +224,7 @@ public class SupabaseClient {
         }
     }
 
-    public void updateUserPassword(String newPassword, final SBC_Callback callback) {
+    public void updateUserPassword(Context context, String newPassword, final SBC_Callback callback) {
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("password", newPassword);
@@ -206,11 +234,14 @@ public class SupabaseClient {
                     MediaType.parse("application/json")
             );
 
+            SessionManager sessionManager = new SessionManager(context);
+
             Request request = new Request.Builder()
                     .url(DOMAIN_NAME + AUTH_PATH + "user")
                     .method("PUT", body)
                     .addHeader("apikey", API_KEY)
-                    .addHeader("Authorization", DataBinding.getBearerToken())
+                    .addHeader("Authorization", "Bearer " +
+                            sessionManager.getBearerToken())
                     .addHeader("Content-Type", "application/json")
                     .build();
 

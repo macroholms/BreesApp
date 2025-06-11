@@ -124,7 +124,7 @@ public class PasswordRecoveryFourth extends Fragment {
     }
 
     private void updatePassword(String newPassword){
-        supabaseClient.updateUserPassword(newPassword, new SupabaseClient.SBC_Callback() {
+        supabaseClient.updateUserPassword(getContext(), newPassword, new SupabaseClient.SBC_Callback() {
             @Override
             public void onFailure(IOException e) {
                 Toast.makeText(getContext(), "Ошибка: " + e.getMessage(),

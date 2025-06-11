@@ -26,7 +26,7 @@ import com.example.breesapp.classes.SessionManager;
 
 public class PinRegActivity extends AppCompatActivity {
 
-    private SessionManager sessionManager = new SessionManager(this);
+    private SessionManager sessionManager;
     private TextView title;
     private Button forgot;
     private String password = "";
@@ -40,7 +40,7 @@ public class PinRegActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pin_reg);
-
+        sessionManager = new SessionManager(this);
         title = findViewById(R.id.titleText);
 
         title.setText(getString(R.string.pin_en));

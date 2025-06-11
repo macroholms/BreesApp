@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape
+            android:shape="rectangle">
+            <size android:width="48dp" android:height="48dp"/>
+            <solid android:color="@color/icon_bh_profile"/>
+            <corners android:radius="10dp"/>
+
+        </shape>
+    </item>
+    <item android:drawable="@drawable/parameters_icon" android:height="24dp"
+        android:width="24dp" android:gravity="center"/>
+</layer-list>

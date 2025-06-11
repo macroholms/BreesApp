@@ -8,23 +8,20 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.example.breesapp.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:label="Home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_statistic"
         android:name="com.example.breesapp.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:label="Statistic" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_messages"
         android:name="com.example.breesapp.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:label="Messages" />
+
     <fragment
-        android:id="@+id/profileFragment"
+        android:id="@+id/navigation_profile"
         android:name="com.example.breesapp.ProfileFragment"
-        android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        android:label="Profile" />
 </navigation>

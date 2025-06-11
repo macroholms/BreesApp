@@ -96,6 +96,22 @@ public class PasswordRecoveryThird extends Fragment {
             }
         });
 
+        Button resend = view.findViewById(R.id.resend_btn);
+        resend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                supabaseClient.sendPasswordResetOtp(email, new SupabaseClient.SBC_Callback() {
+                    @Override
+                    public void onFailure(IOException e) {
+                    }
+
+                    @Override
+                    public void onResponse(String responseBody) {
+                    }
+                });
+            }
+        });
+
         PinView otp = view.findViewById(R.id.recoveryPinView);
         otp.setCursorVisible(true);
 
@@ -112,7 +128,7 @@ public class PasswordRecoveryThird extends Fragment {
     }
 
     private void verifyOtp(String email, String otp) {
-        supabaseClient.verifyPasswordResetOtp(email, otp, new SupabaseClient.SBC_Callback() {
+        supabaseClient.verifyPasswordResetOtp(getContext(),email, otp, new SupabaseClient.SBC_Callback() {
             @Override
             public void onFailure(IOException e) {
                 Toast.makeText(getContext(), "Ошибка: " + e.getMessage(), Toast.LENGTH_SHORT).show();

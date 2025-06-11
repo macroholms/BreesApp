@@ -28,15 +28,15 @@ public class DataBinding {
     }
 
     public static void start(){
-        sharedPreferences2.edit().putString("status", "bookAll");
+        sharedPreferences2.edit().putString("status", "bookAll").apply();
     }
 
     public static void logined(){
-        sharedPreferences2.edit().putString("status", "logined");
+        sharedPreferences2.edit().putString("status", "logined").apply();
     }
 
     public static void unlogined(){
-        sharedPreferences2.edit().putString("status", "unlogined");
+        sharedPreferences2.edit().putString("status", "unlogined").apply();
     }
 
     public static String getStatus(){

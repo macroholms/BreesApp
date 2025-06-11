@@ -50,6 +50,9 @@ public class SessionManager {
     public String getBearerToken() {
         return sharedPreferences.getString(KEY_BEARER_TOKEN, null);
     }
+    public void setBearer(String Token){
+        sharedPreferences.edit().putString(KEY_BEARER_TOKEN, Token);
+    }
 
     public String getUserId() {
         return sharedPreferences.getString(KEY_USER_ID, null);
