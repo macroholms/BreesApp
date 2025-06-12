@@ -2,6 +2,7 @@ package com.example.breesapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -96,6 +97,8 @@ public class LoginActivity extends AppCompatActivity {
                             auth.getAccess_token(),
                             auth.getUser().getId()
                     );
+
+                    DataBinding.init(getApplicationContext());
                     DataBinding.logined();
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
                     finish();

@@ -130,9 +130,18 @@
         app:layout_constraintTop_toBottomOf="@id/ConfPasswordTextField"
         app:layout_constraintStart_toStartOf="@id/ConfPasswordTextField"
         android:layout_marginTop="25dp"
+        android:layout_marginEnd="20dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/terms_text"
-        android:layout_marginEnd="20dp"
-        android:fontFamily="@font/inter_28pt_regular"/>
+        android:fontFamily="@font/inter_28pt_regular"
+        android:autoLink="web"
+        android:linksClickable="true"
+        app:layout_constraintStart_toEndOf="@id/check_terms"
+        app:layout_constraintTop_toTopOf="@id/check_terms"
+        app:layout_constraintBottom_toBottomOf="@id/check_terms"/>
 
     <Button
         android:id="@+id/reg_btn"

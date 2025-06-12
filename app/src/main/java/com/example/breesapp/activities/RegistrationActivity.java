@@ -3,15 +3,19 @@ package com.example.breesapp.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.breesapp.R;
+import com.example.breesapp.classes.SessionManager;
 import com.example.breesapp.classes.SupabaseClient;
 import com.example.breesapp.classes.Validator;
 import com.example.breesapp.models.AuthResponse;
@@ -81,6 +85,9 @@ public class RegistrationActivity extends AppCompatActivity {
                                 String password = Password.getText().toString().trim();
                                 SupabaseClient supabaseClient = new SupabaseClient();
                                 LogRegRequest loginRequest = new LogRegRequest(email, password);
+                                SessionManager sessionManager = new SessionManager(getApplicationContext());
+                                sessionManager.setEmail(email);
+                                sessionManager.setName(name);
 
                                 supabaseClient.registr(loginRequest, new SupabaseClient.SBC_Callback() {
                                     @Override
@@ -105,11 +112,11 @@ public class RegistrationActivity extends AppCompatActivity {
                                                 return;
                                             }
 
-                                            DataBinding.saveBearerToken("Bearer " + auth.getAccess_token());
+                                            sessionManager.setBearer("Bearer " + auth.getAccess_token());
+                                            sessionManager.setUserId(auth.getUser().getId());
                                             DataBinding.saveUuidUser(auth.getUser().getId());
 
-                                            ProfileUpdate profileUpdate = new ProfileUpdate(name, "profile1.png");
-                                            supabaseClient.updateProfile(profileUpdate, new SupabaseClient.SBC_Callback() {
+                                            supabaseClient.updateProfile(getApplicationContext(), name, new SupabaseClient.SBC_Callback() {
                                                 @Override
                                                 public void onFailure(IOException e) {
                                                     runOnUiThread(() -> {
@@ -132,21 +139,25 @@ public class RegistrationActivity extends AppCompatActivity {
                                         });
                                     }
                                 });
-                            }
-                        }
-                        else{
+                            }else{
                             Toast.makeText(this, getResources().getString(R.string.terms_error),
                                     Toast.LENGTH_SHORT).show();
+                        }
+                        }
+                        else{
+                            Pass.setHelperTextEnabled(true);
+                            Pass.setError(getResources().getString(R.string.password_match_error));
                         }
                     }
                     else {
                         Pass.setHelperTextEnabled(true);
-                        Pass.setError(getResources().getString(R.string.password_match_error));
+                        Pass.setError(getResources().getString(R.string.password_lenght_error));
+
                     }
                 }
                 else{
-                    Pass.setHelperTextEnabled(true);
-                    Pass.setError(getResources().getString(R.string.password_lenght_error));
+                Toast.makeText(this, getResources().getString(R.string.email_error),
+                        Toast.LENGTH_SHORT).show();
                 }
             }
         else{

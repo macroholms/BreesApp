@@ -21,4 +21,6 @@
     <color name="green">#1ADE5D</color>
     <color name="lgray">#80807f</color>
     <color name="icon_bh_profile">#E9E9FF</color>
+    <color name="lpurple">#4A44C6</color>
+    <color name="topic_text_color">#6C727F</color>
 </resources>

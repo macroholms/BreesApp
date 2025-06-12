@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.SettingsActivity"
+    android:background="@drawable/bg_lgray">
+
+    <TextView
+        android:id="@+id/title_setttings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings"
+        android:textColor="@color/black"
+        android:fontFamily="@font/inter_28pt_regular"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="40dp"/>
+
+    <ImageButton
+        android:id="@+id/back_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/back_btn_img"
+        android:backgroundTint="@color/transperent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="20dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/title_setttings"
+        android:layout_marginTop="30dp"
+        android:paddingHorizontal="30dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/general"
+            android:fontFamily="@font/inter_28pt_regular"
+            android:textColor="@color/lgray"/>
+
+        <Button
+            android:id="@+id/btn_res_pass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TransparentButton"
+            android:text="@string/reset_password"
+            android:textAlignment="textStart"
+            android:layout_marginTop="20dp"
+            android:textSize="14sp"
+            android:textAllCaps="false"
+            android:drawableRight="@drawable/chevron_right"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/security"
+            android:fontFamily="@font/inter_28pt_regular"
+            android:textColor="@color/lgray"
+            android:layout_marginTop="50dp"/>
+
+        <Button
+            android:id="@+id/btn_privacy_policy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TransparentButton"
+            android:text="@string/privacy_policy"
+            android:textAlignment="textStart"
+            android:layout_marginTop="20dp"
+            android:textSize="14sp"
+            android:textAllCaps="false"
+            android:drawableRight="@drawable/chevron_right"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/logout_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/logout_btn"
+        android:layout_marginHorizontal="30dp"
+        android:text="Logout"
+        android:textAllCaps="false"
+        android:textColor="@color/main"
+        android:fontFamily="@font/inter_28pt_semibold"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/inter_28pt_regular"
+        android:textColor="@color/lgray"
+        android:text="@string/brees_2025_v1_0"
+        app:layout_constraintTop_toBottomOf="@id/logout_btn"
+        app:layout_constraintStart_toStartOf="@id/logout_btn"
+        app:layout_constraintEnd_toEndOf="@id/logout_btn"
+        android:layout_marginTop="20dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

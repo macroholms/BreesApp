@@ -22,7 +22,6 @@ public class DataBinding {
         return sharedPreferences.getString("bearer_token", null);
     }
 
-
     public static void saveUuidUser(String uuid) {
         sharedPreferences.edit().putString("user_uuid", uuid).apply();
     }

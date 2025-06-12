@@ -7,6 +7,7 @@ import android.util.Base64;
 public class SessionManager {
     private static final String PREF_NAME = "user_session";
     private static final String KEY_EMAIL = "email";
+    private static final String KEY_NAME = "name";
     private static final String KEY_PASSWORD = "password";
     private static final String KEY_BEARER_TOKEN = "bearer_token";
     private static final String KEY_USER_ID = "user_id";
@@ -34,6 +35,15 @@ public class SessionManager {
     public String getEmail() {
         return sharedPreferences.getString(KEY_EMAIL, null);
     }
+    public void setEmail(String email) {
+        sharedPreferences.edit().putString(KEY_EMAIL, email).apply();
+    }
+    public String getName() {
+        return sharedPreferences.getString(KEY_NAME, null);
+    }
+    public void setName(String email) {
+        sharedPreferences.edit().putString(KEY_NAME, email).apply();
+    }
 
     public String getPassword() {
         String encrypted = sharedPreferences.getString(KEY_PASSWORD, null);
@@ -56,6 +66,10 @@ public class SessionManager {
 
     public String getUserId() {
         return sharedPreferences.getString(KEY_USER_ID, null);
+    }
+
+    public void setUserId(String id) {
+        sharedPreferences.edit().putString(KEY_USER_ID, id).apply();
     }
 
     public void logoutUser() {
