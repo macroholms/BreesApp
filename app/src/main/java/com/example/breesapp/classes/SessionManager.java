@@ -12,6 +12,7 @@ public class SessionManager {
     private static final String KEY_BEARER_TOKEN = "bearer_token";
     private static final String KEY_USER_ID = "user_id";
     private static final String KEY_PIN = "pin";
+    private static final String KEY_IMAGE = "avatar";
 
     private SharedPreferences sharedPreferences;
 
@@ -70,6 +71,14 @@ public class SessionManager {
 
     public void setUserId(String id) {
         sharedPreferences.edit().putString(KEY_USER_ID, id).apply();
+    }
+
+    public String getAvatar() {
+        return sharedPreferences.getString(KEY_IMAGE, null);
+    }
+
+    public void setAvatar(String id) {
+        sharedPreferences.edit().putString(KEY_IMAGE, id).apply();
     }
 
     public void logoutUser() {

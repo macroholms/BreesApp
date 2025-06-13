@@ -137,19 +137,33 @@ public class MyAccountActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "Фото загружено"
                                         , Toast.LENGTH_SHORT).show();
 
+                                if (sessionManager.getAvatar().equals("default")){
+                                    supabaseClient.updateFileUrl(getApplicationContext(), fileName, new SupabaseClient.SBC_Callback() {
+                                        @Override
+                                        public void onFailure(IOException e) {
+                                            Log.e("AvatarUpdate", "Ошибка обновления ссылки на фото", e);
+                                        }
 
-                                supabaseClient.updateFileUrl(getApplicationContext(), fileName, new SupabaseClient.SBC_Callback() {
-                                    @Override
-                                    public void onFailure(IOException e) {
-                                        Log.e("AvatarUpdate", "Ошибка обновления ссылки на фото", e);
-                                        Toast.makeText(getApplicationContext(), "Не удалось обновить ссылку на фото", Toast.LENGTH_SHORT).show();
-                                    }
+                                        @Override
+                                        public void onResponse(String responseBody) {
+                                            Log.e("!!!", responseBody.toString());
+                                        }
+                                    });
+                                }
+                                else{
+                                    supabaseClient.uploadAvatarAndUpdateUser(getApplicationContext(),
+                                            selectedImageUri, new SupabaseClient.SBC_Callback() {
+                                                @Override
+                                                public void onFailure(IOException e) {
 
-                                    @Override
-                                    public void onResponse(String responseBody) {
-                                        Toast.makeText(getApplicationContext(), "Ссылка на фото обновлена", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                                }
+
+                                                @Override
+                                                public void onResponse(String responseBody) {
+
+                                                }
+                                            });
+                                }
                             });
                         }
                     });

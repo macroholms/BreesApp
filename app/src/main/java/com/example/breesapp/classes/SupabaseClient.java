@@ -366,6 +366,100 @@ public class SupabaseClient {
         });
     }
 
+    public void uploadAvatarAndUpdateUser(Context context, Uri uri, SBC_Callback callback) {
+        String realPath = RealPathUtil.getRealPath(context, uri);
+        SessionManager sessionManager = new SessionManager(context);
+
+        if (realPath == null) {
+            callback.onFailure(new IOException("Не удалось получить путь файла"));
+            return;
+        }
+
+        String userId = sessionManager.getUserId();
+        String fileName = "profile_" + userId + ".png";
+
+        File file = new File(realPath);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+
+        MultipartBody body = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", fileName, requestBody)
+                .build();
+
+        String url = DOMAIN_NAME + "/storage/v1/object/avatars/" + fileName;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .put(body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    updateAvatarUrlInDatabase(context, url, callback);
+                } else {
+                    String errorBody = response.body() != null ? response.body().string() : "Empty response";
+                    callback.onFailure(new IOException("Upload failed: " + response.code() + ", Body: " + errorBody));
+                }
+            }
+        });
+    }
+
+    private void updateAvatarUrlInDatabase(Context context, String avatarUrl, SBC_Callback callback) {
+        SessionManager sessionManager = new SessionManager(context);
+        String userId = sessionManager.getUserId();
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("avatar_url", avatarUrl);
+        } catch (JSONException e) {
+            return;
+        }
+
+        RequestBody body = RequestBody.create(
+                MediaType.get("application/json"), jsonBody.toString());
+
+        String updateUrl = DOMAIN_NAME + "/rest/v1/users?id=eq." + userId;
+
+        Request request = new Request.Builder()
+                .url(updateUrl)
+                .patch(body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=minimal")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                try {
+                    if (response.isSuccessful()) {
+                        callback.onResponse("Аватар успешно обновлен");
+                    } else {
+                        String errorBody = response.body() != null ? response.body().string() : "Empty response";
+                        callback.onFailure(new IOException("DB update failed: " + response.code() + ", Body: " + errorBody));
+                    }
+                } catch (IOException e) {
+                    callback.onFailure(e);
+                }
+            }
+        });
+    }
+
     public void updateFileUrl(Context context,String url, final SBC_Callback callback) {
         JSONObject jsonObject = new JSONObject();
         try {

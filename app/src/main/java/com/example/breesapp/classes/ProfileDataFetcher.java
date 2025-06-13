@@ -8,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.breesapp.models.ProfileResponse;
 import com.google.gson.Gson;
 
@@ -57,7 +58,17 @@ public class ProfileDataFetcher {
                                     avatarUrl = "https://nrwxeidhsclzffyojfvq.supabase.co/storage/v1/object/public/avatars/"  + avatarUrl;
                                 }
 
-                                Glide.with(context).load(avatarUrl).into(avatar);
+                                if (!avatarUrl.equals("images.png")){
+                                    sessionManager.setAvatar("custom");
+                                }else{
+                                    sessionManager.setAvatar("default");
+                                }
+
+                                Glide.with(context)
+                                        .load(avatarUrl)
+                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                        .skipMemoryCache(true)
+                                        .into(avatar);
                             }
                         } else {
                             Toast.makeText(context, "Профиль не найден", Toast.LENGTH_SHORT).show();
