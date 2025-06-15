@@ -138,7 +138,8 @@ public class MyAccountActivity extends AppCompatActivity {
                                         , Toast.LENGTH_SHORT).show();
 
                                 if (sessionManager.getAvatar().equals("default")){
-                                    supabaseClient.updateFileUrl(getApplicationContext(), fileName, new SupabaseClient.SBC_Callback() {
+                                    supabaseClient.updateAvatarUrlInDatabase(getApplicationContext(), fileName,
+                                            new SupabaseClient.SBC_Callback() {
                                         @Override
                                         public void onFailure(IOException e) {
                                             Log.e("AvatarUpdate", "Ошибка обновления ссылки на фото", e);

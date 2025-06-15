@@ -1,5 +1,6 @@
 package com.example.breesapp.classes;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
@@ -9,24 +10,38 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.breesapp.interfaces.DataItem;
+import com.example.breesapp.models.BalanceHistory;
 import com.example.breesapp.models.DataBinding;
 import com.example.breesapp.models.LogRegRequest;
 import com.example.breesapp.models.ProfileResponse;
 import com.example.breesapp.models.ProfileUpdate;
+import com.example.breesapp.models.Transaction;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -413,7 +428,7 @@ public class SupabaseClient {
         });
     }
 
-    private void updateAvatarUrlInDatabase(Context context, String avatarUrl, SBC_Callback callback) {
+    public void updateAvatarUrlInDatabase(Context context, String avatarUrl, SBC_Callback callback) {
         SessionManager sessionManager = new SessionManager(context);
         String userId = sessionManager.getUserId();
 
@@ -460,46 +475,6 @@ public class SupabaseClient {
         });
     }
 
-    public void updateFileUrl(Context context,String url, final SBC_Callback callback) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("avatar_url", url);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        RequestBody body = RequestBody.create(
-                jsonObject.toString(),
-                MediaType.parse("application/json")
-        );
-        SessionManager sessionManager = new SessionManager(context);
-
-        Request request = new Request.Builder()
-                .url(DOMAIN_NAME + REST_PATH + "profiles?id=eq." + sessionManager.getUserId())
-                .method("PATCH", body)
-                .addHeader("apikey", API_KEY)
-                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Prefer", "return=minimal")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                callback.onFailure(e);
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    callback.onResponse(responseBody);
-                } else {
-                    callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
-                }
-            }
-        });
-    }
-
     public void fetchUserProfile(Context context, SBC_Callback callback) {
         SessionManager sessionManager = new SessionManager(context);
         String userId = sessionManager.getUserId();
@@ -538,15 +513,241 @@ public class SupabaseClient {
         });
     }
 
+    public void increaseBalance(Context context, Float amount, SBC_Callback callback) {
+        JSONObject jsonBody = new JSONObject();
+        SessionManager sessionManager = new SessionManager(context);
+        try {
+            jsonBody.put("userid", sessionManager.getUserId());
+            jsonBody.put("amount", amount);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, jsonBody.toString());
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + REST_PATH + "rpc/increase_balance")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse(response.body().string());
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
+                }
+            }
+        });
+    }
+
+    public void fetchProfiles(Context context, SBC_Callback callback) {
+        SessionManager sessionManager = new SessionManager(context);
+        String userId = sessionManager.getUserId();
+        if (userId == null || userId.isEmpty()) {
+            return;
+        }
+
+        String url = DOMAIN_NAME + REST_PATH + "profiles?select=*";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " +
+                        sessionManager.getBearerToken())
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String body = response.body().string();
+                    callback.onResponse(body);
+                } else {
+                    String errorBody = response.body() != null ? response.body().string() : "Неизвестная ошибка";
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code() + ", " + errorBody));
+                }
+            }
+        });
+    }
+
+    public List<DataItem> fetchTransactions(Context context) throws IOException {
+        List<DataItem> combinedData = new ArrayList<>();
+        SessionManager sessionManager = new SessionManager(context);
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("input_uuid", sessionManager.getUserId());
+
+            MediaType mediaType = MediaType.parse("application/json");
+            RequestBody body = RequestBody.create(mediaType, jsonObject.toString());
+            Request request = new Request.Builder()
+                    .url(DOMAIN_NAME + REST_PATH + "rpc/get_transactions_by_uuid")
+                    .method("POST", body)
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("apikey", API_KEY)
+                    .addHeader("Authorization", "Bearer "
+                            + sessionManager.getBearerToken())
+                    .build();
+
+            Response transactionsResponse = client.newCall(request).execute();
+            if (transactionsResponse.isSuccessful() && transactionsResponse.body() != null) {
+                String responseBody = transactionsResponse.body().string();
+                Log.e("Transactions Response", responseBody);
+
+                try {
+                    JSONArray jsonArray = new JSONArray(responseBody);
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject transactionObj = jsonArray.getJSONObject(i);
+                        Transaction transaction = new Transaction(
+                                transactionObj.getInt("id"),
+                                transactionObj.getString("created_at"),
+                                transactionObj.getString("id_sender"),
+                                transactionObj.getString("id_recipient"),
+                                transactionObj.getLong("money")
+                        );
+                        combinedData.add(new TransactionItem(transaction));
+                    }
+                } catch (JSONException e) {
+                    Log.e("JSON Error", "Ошибка разбора транзакций: " + e.getMessage());
+                }
+            } else {
+                Log.e("HTTP Error", "Не удалось получить транзакции: " + transactionsResponse.code());
+            }
+        } catch (IOException e) {
+            Log.e("Network Error", "Ошибка сети при запросе транзакций: " + e.getMessage());
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            HttpUrl balanceHistoryUrl = HttpUrl.parse(DOMAIN_NAME + REST_PATH + "balance_history").newBuilder()
+                    .build();
+
+            Request balanceHistoryRequest = new Request.Builder()
+                    .url(balanceHistoryUrl)
+                    .addHeader("apikey", API_KEY)
+                    .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                    .build();
+            Response balanceHistoryResponse = client.newCall(balanceHistoryRequest).execute();
+            if (balanceHistoryResponse.isSuccessful() && balanceHistoryResponse.body() != null) {
+                String responseBody = balanceHistoryResponse.body().string();
+                Log.e("Balance History Response", responseBody);
+                try {
+                    JSONArray jsonArray = new JSONArray(responseBody);
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject balanceHistoryObj = jsonArray.getJSONObject(i);
+                        BalanceHistory balanceHistory = new BalanceHistory(
+                                balanceHistoryObj.getInt("id"),
+                                balanceHistoryObj.getString("created_at"),
+                                balanceHistoryObj.getString("user_id"),
+                                balanceHistoryObj.getString("type"),
+                                balanceHistoryObj.getLong("value")
+                        );
+                        combinedData.add(new BalanceHistoryItem(balanceHistory));
+                    }
+                } catch (JSONException e) {
+                    Log.e("JSON Error", "Ошибка разбора истории баланса: " + e.getMessage());
+                }
+            } else {
+                Log.e("HTTP Error", "Не удалось получить историю баланса: " + balanceHistoryResponse.code());
+            }
+        } catch (IOException e) {
+            Log.e("Network Error", "Ошибка сети при запросе истории баланса: " + e.getMessage());
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+        Collections.sort(combinedData, new Comparator<DataItem>() {
+            @Override
+            public int compare(DataItem item1, DataItem item2) {
+                Instant date1 = null;
+                Instant date2 = null;
+
+                try {
+                    if (item1.getItemType() == 0) {
+                        date1 = Instant.from(formatter.parse(((TransactionItem) item1).getTransaction().getCreatedAt()));
+                    } else {
+                        date1 = Instant.from(formatter.parse(((BalanceHistoryItem) item1).getBalanceHistory().getCreatedAt()));
+                    }
+
+                    if (item2.getItemType() == 0) {
+                        date2 = Instant.from(formatter.parse(((TransactionItem) item2).getTransaction().getCreatedAt()));
+                    } else {
+                        date2 = Instant.from(formatter.parse(((BalanceHistoryItem) item2).getBalanceHistory().getCreatedAt()));
+                    }
+
+                    return date2.compareTo(date1);
+
+                } catch (Exception e) {
+                    Log.e("Date Parse Error", "Ошибка парсинга даты", e);
+                    return 0;
+                }
+            }
+        });
+
+        return combinedData;
+    }
+
+    public void transferMoney(Context context, String Email, Float amount, SBC_Callback callback) {
+        JSONObject jsonBody = new JSONObject();
+        SessionManager sessionManager = new SessionManager(context);
+        try {
+            jsonBody.put("amount", amount);
+            jsonBody.put("recipient_email", Email);
+            jsonBody.put("sender_id", sessionManager.getUserId());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, jsonBody.toString());
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + REST_PATH + "rpc/transfer_money")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse(response.body().string());
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
+                }
+            }
+        });
+    }
+
     public interface SBC_Callback {
         void onFailure(IOException e);
         void onResponse(String responseBody);
-    }
-
-    private String getFileExtension(File file) {
-        String name = file.getName();
-        int lastIndexOf = name.lastIndexOf(".");
-        if (lastIndexOf == -1) return "";
-        return name.substring(lastIndexOf);
     }
 }

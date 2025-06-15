@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="default_money_range">
+        <item>0</item>
+        <item>100000</item>
+    </array>
+</resources>
