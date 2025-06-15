@@ -8,17 +8,17 @@
 
     <item
         android:id="@+id/navigation_statistic"
-        android:icon="@drawable/hart"
-        android:title="@string/title_dashboard" />
+        android:icon="@drawable/message"
+        android:title="@string/mail" />
 
     <item
         android:id="@+id/navigation_messages"
-        android:icon="@drawable/message"
-        android:title="@string/title_notifications" />
+        android:icon="@drawable/hart"
+        android:title="@string/statistic" />
 
     <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/profile"
-        android:title="@string/title_notifications" />
+        android:title="@string/title_profile" />
 
 </menu>

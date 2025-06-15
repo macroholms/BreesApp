@@ -746,6 +746,131 @@ public class SupabaseClient {
         });
     }
 
+    public void getMonthlyStatistic(Context context, Integer Month, Integer Year, SBC_Callback callback) {
+        JSONObject jsonBody = new JSONObject();
+        SessionManager sessionManager = new SessionManager(context);
+        try {
+            jsonBody.put("p_user_id", sessionManager.getUserId());
+            jsonBody.put("p_month", Month);
+            jsonBody.put("p_year", Year);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, jsonBody.toString());
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + REST_PATH + "rpc/get_monthly_statistics")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse(response.body().string());
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
+                }
+            }
+        });
+    }
+
+    public void getReceivedMails(Context context, SBC_Callback callback) {
+        JSONObject jsonBody = new JSONObject();
+        SessionManager sessionManager = new SessionManager(context);
+        try {
+            jsonBody.put("user_id", sessionManager.getUserId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, jsonBody.toString());
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + REST_PATH + "rpc/get_received_letters")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse(response.body().string());
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
+                }
+            }
+        });
+    }
+
+    public void updateRecipientVisibility(Context context, String id, SBC_Callback callback) {
+        SessionManager sessionManager = new SessionManager(context);
+        String userId = sessionManager.getUserId();
+        if (userId == null || userId.isEmpty()) {
+            callback.onFailure(new IOException("User ID не найден"));
+            return;
+        }
+
+        String url = DOMAIN_NAME + REST_PATH + "eletters?id=eq." + id;
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("recipient_visibility", false);
+        } catch (JSONException e) {
+            return;
+        }
+
+        RequestBody body = RequestBody.create(
+                jsonBody.toString(),
+                MediaType.get("application/json; charset=utf-8")
+        );
+
+        Request request = new Request.Builder()
+                .url(url)
+                .patch(body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=minimal")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse("Обновление прошло успешно");
+                } else {
+                    String errorBody = response.body() != null ? response.body().string() : "Неизвестная ошибка";
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code() + ", " + errorBody));
+                }
+            }
+        });
+    }
+
     public interface SBC_Callback {
         void onFailure(IOException e);
         void onResponse(String responseBody);

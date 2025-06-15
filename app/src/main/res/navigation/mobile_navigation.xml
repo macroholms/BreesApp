@@ -12,12 +12,12 @@
 
     <fragment
         android:id="@+id/navigation_statistic"
-        android:name="com.example.breesapp.ui.dashboard.DashboardFragment"
+        android:name="com.example.breesapp.ui.notifications.NotificationsFragment"
         android:label="Statistic" />
 
     <fragment
         android:id="@+id/navigation_messages"
-        android:name="com.example.breesapp.ui.notifications.NotificationsFragment"
+        android:name="com.example.breesapp.ui.dashboard.DashboardFragment"
         android:label="Messages" />
 
     <fragment

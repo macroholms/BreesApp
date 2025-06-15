@@ -84,4 +84,18 @@
     <string name="transaction_hint">Enter the amount and the recipient\'s email address to whom you want to transfer the money. Then click the confirmation button.</string>
     <string name="please_enter_an_email_of_recipient">Please, enter an email of recipient</string>
     <string name="please_enter_an_amount_money_for_transaction">Please, enter an amount money for transaction</string>
+    <string name="statistic">Statistic</string>
+    <string name="mail">Mail</string>
+    <string name="spent_per_month">Spent per month</string>
+    <string name="received_per_month">Received per month</string>
+    <string name="transactions_per_month">Transactions per month</string>
+    <string name="search_in_mail">Search in mail</string>
+    <string name="inbox">Inbox</string>
+    <string name="sent">Sent</string>
+    <string name="starred">Starred</string>
+    <string name="send">Send</string>
+    <string name="file_attach">File attach</string>
+    <string name="file_not_attached">File not attached</string>
+    <string name="delete">Delete</string>
+    <string name="add_to_group">Add to group</string>
 </resources>

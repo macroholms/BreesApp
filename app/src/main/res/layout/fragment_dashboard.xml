@@ -4,19 +4,146 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.dashboard.DashboardFragment">
+    tools:context=".ui.dashboard.DashboardFragment"
+    android:background="@color/main">
 
     <TextView
-        android:id="@+id/text_dashboard"
+        android:id="@+id/statistic_tittle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/statistic"
         android:textAlignment="center"
-        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/inter_28pt_semibold"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/statistic_tittle"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:background="@drawable/list_bg"
+        android:layout_marginTop="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginHorizontal="20dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:layout_weight="1"
+                android:id="@+id/minus_month_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/transperent"
+                android:src="@drawable/back_btn_img_white"/>
+
+            <TextView
+                android:id="@+id/MonthTV"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:fontFamily="@font/inter_28pt_semibold"
+                android:textAlignment="center"
+                />
+
+            <TextView
+                android:id="@+id/YearTV"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:fontFamily="@font/inter_28pt_semibold"
+                />
+
+            <ImageButton
+                android:layout_weight="1"
+                android:id="@+id/plus_month_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/transperent"
+                android:src="@drawable/forward_btn_img_white"/>
+        </LinearLayout>
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:rowCount="3"
+            android:columnCount="2"
+            android:layout_marginHorizontal="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/spent_per_month"
+                android:fontFamily="@font/inter_28pt_semibold"
+                android:textColor="@color/black"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:layout_columnWeight="1"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/received_per_month"
+                android:fontFamily="@font/inter_28pt_semibold"
+                android:textColor="@color/black"
+                android:layout_row="1"
+                android:layout_column="0"
+                android:layout_columnWeight="1"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/transactions_per_month"
+                android:fontFamily="@font/inter_28pt_semibold"
+                android:textColor="@color/black"
+                android:layout_row="2"
+                android:layout_column="0"
+                android:layout_columnWeight="1"/>
+
+            <TextView
+                android:id="@+id/SpentTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_28pt_semibold"
+                android:textColor="@color/black"
+                android:textAlignment="textEnd"
+                android:layout_row="0"
+                android:layout_column="1"
+                android:layout_columnWeight="1"/>
+
+            <TextView
+                android:id="@+id/ReceivedTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_28pt_semibold"
+                android:textColor="@color/black"
+                android:textAlignment="textEnd"
+                android:layout_row="1"
+                android:layout_column="1"
+                android:layout_columnWeight="1"/>
+
+            <TextView
+                android:id="@+id/ColvoTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_28pt_semibold"
+                android:textColor="@color/black"
+                android:textAlignment="textEnd"
+                android:layout_row="2"
+                android:layout_column="1"
+                android:layout_columnWeight="1"/>
+        </GridLayout>
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
