@@ -6,8 +6,7 @@ public class ElettersGroup {
     private String color;
     private String user_id;
 
-    public ElettersGroup() {
-    }
+    public ElettersGroup() {}
 
     public ElettersGroup(int id, String tittle, String color, String user_id) {
         this.id = id;
@@ -19,31 +18,24 @@ public class ElettersGroup {
     public int getId() {
         return id;
     }
-
     public void setId(int id) {
         this.id = id;
     }
-
     public String getTitle() {
         return tittle;
     }
-
     public void setTitle(String tittle) {
         this.tittle = tittle;
     }
-
     public String getColor() {
         return color;
     }
-
     public void setColor(String color) {
         this.color = color;
     }
-
     public String getUserId() {
         return user_id;
     }
-
     public void setUserId(String user_id) {
         this.user_id = user_id;
     }
