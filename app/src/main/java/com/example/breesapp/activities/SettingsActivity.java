@@ -41,7 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 DataBinding.init(getApplicationContext());
-                DataBinding.start();
+                DataBinding.unlogined();
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 finish();
             }

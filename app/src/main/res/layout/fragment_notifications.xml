@@ -33,6 +33,7 @@
                 android:backgroundTint="@color/transperent"/>
 
             <EditText
+                android:id="@+id/search_ed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -85,11 +86,57 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/drawer_recycler"
+    <FrameLayout
+        android:id="@+id/left_drawer"
         android:layout_width="250dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="#FFFFFF"
-        android:padding="16dp"/>
+        android:layout_gravity="start">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/drawer_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="#FFFFFF"
+                android:padding="16dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/groups_rv"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="8dp"
+                android:background="#F9F9F9"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:padding="8dp">
+
+            <ImageButton
+                android:id="@+id/btn_close_drawer"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_close"
+                android:backgroundTint="@color/white"/>
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_add_group"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/plus_round"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/white"/>
+    </FrameLayout>
+
 </androidx.drawerlayout.widget.DrawerLayout>

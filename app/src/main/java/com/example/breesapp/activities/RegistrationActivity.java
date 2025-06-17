@@ -2,6 +2,7 @@ package com.example.breesapp.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -114,7 +115,6 @@ public class RegistrationActivity extends AppCompatActivity {
 
                                             sessionManager.setBearer("Bearer " + auth.getAccess_token());
                                             sessionManager.setUserId(auth.getUser().getId());
-                                            DataBinding.saveUuidUser(auth.getUser().getId());
 
                                             supabaseClient.updateProfile(getApplicationContext(), name, new SupabaseClient.SBC_Callback() {
                                                 @Override
@@ -131,6 +131,10 @@ public class RegistrationActivity extends AppCompatActivity {
                                                         Log.d("updateProfile:onResponse", response);
                                                         Toast.makeText(RegistrationActivity.this, "Профиль обновлён", Toast.LENGTH_SHORT).show();
                                                         DataBinding.logined();
+                                                        SharedPreferences sharedPref = getSharedPreferences("user_session", MODE_PRIVATE);
+                                                        if (sharedPref.contains("pin")){
+                                                            sharedPref.edit().remove("pin").apply();
+                                                        }
                                                         startActivity(new Intent(RegistrationActivity.this, PinRegActivity.class));
                                                         finish();
                                                     });

@@ -1,10 +1,11 @@
 package com.example.breesapp.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import java.util.Date;
 
-public class EmailItem {
+public class EmailItem implements Serializable {
     private int id;
     private Date createdAt;
     private String senderFullName;
@@ -15,14 +16,15 @@ public class EmailItem {
     private String content;
     private boolean senderVisible;
     private boolean recipientVisible;
-    private Integer groupID; // Может быть null
+    private Integer groupID;
     private boolean readed;
+    private boolean favourite;
     private Object fileUrl;
 
     public EmailItem(int id, Date createdAt, String senderFullName, String senderAvatarUrl,
                      String recipientFullName, String recipientAvatarUrl, String theme,
                      String content, boolean senderVisible, boolean recipientVisible,
-                     Integer groupID, boolean readed, Object fileUrl) {
+                     Integer groupID, boolean readed, boolean favourite, Object fileUrl) {
         this.id = id;
         this.createdAt = createdAt;
         this.senderFullName = senderFullName;
@@ -35,9 +37,12 @@ public class EmailItem {
         this.recipientVisible = recipientVisible;
         this.groupID = groupID;
         this.readed = readed;
+        this.favourite = favourite;
         this.fileUrl = fileUrl;
     }
 
+    public boolean isFavourite() { return favourite; }
+    public void setFavourite(boolean favourite) {this.favourite = favourite;}
     public int getId() { return id; }
     public Date getCreatedAt() { return createdAt; }
     public String getSenderFullName() { return senderFullName; }
@@ -49,6 +54,7 @@ public class EmailItem {
     public boolean isSenderVisible() { return senderVisible; }
     public boolean isRecipientVisible() { return recipientVisible; }
     public Integer getGroupID() { return groupID; }
+    public void setGroupID(Integer groupID) { this.groupID = groupID; }
     public boolean isReaded() { return readed; }
     public Object getFileUrl() { return fileUrl; }
 

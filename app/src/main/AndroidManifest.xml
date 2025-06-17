@@ -16,9 +16,12 @@
         android:theme="@style/Theme.BreesApp"
         tools:targetApi="31">
         <activity
+            android:name=".activities.EmailItemViewActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.TransactionActivity"
             android:exported="false"
-            android:theme="@style/SplashTheme"/>
+            android:theme="@style/SplashTheme" />
         <activity
             android:name=".activities.TransacDetailsActivity"
             android:exported="false" />
@@ -57,11 +60,6 @@
             android:name=".activities.LoginActivity"
             android:exported="true"
             android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".activities.PinRegActivity"
@@ -74,11 +72,18 @@
         <activity
             android:name=".activities.OnBoardingActivity"
             android:exported="true"
-            android:theme="@style/SplashTheme" />
+            android:theme="@style/SplashTheme">
+        </activity>
         <activity
             android:name=".activities.SplashScreen"
             android:exported="true"
-            android:theme="@style/SplashTheme" />
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activities.MainActivity"
             android:exported="true"

@@ -1,6 +1,7 @@
 package com.example.breesapp.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -99,9 +100,17 @@ public class LoginActivity extends AppCompatActivity {
                     );
 
                     DataBinding.init(getApplicationContext());
-                    DataBinding.logined();
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                    finish();
+                    SharedPreferences sharedPref = getSharedPreferences("user_session", MODE_PRIVATE);
+                    if (DataBinding.getStatus() == "unlogined" || !sharedPref.contains("pin")){
+                        sharedPref.edit().remove("pin").apply();
+                        DataBinding.logined();
+                        startActivity(new Intent(getApplicationContext(), PinRegActivity.class));
+                        finish();
+                    }else{
+                        DataBinding.logined();
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        finish();
+                    }
                 });
             }
         });

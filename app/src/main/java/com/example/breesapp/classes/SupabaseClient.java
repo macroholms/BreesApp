@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -223,28 +224,31 @@ public class SupabaseClient {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (response.isSuccessful()) {
-                        try (ResponseBody responseBody = response.body()){
-                            String responseBodyString = response.body().string();
-
-                            try {
-                                JsonElement jsonElement = new JsonParser().parse(responseBodyString);
-
-                                Gson gson = new Gson();
-                                String json = gson.toJson(jsonElement);
-
-                                JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
-
-                                String accessToken = jsonObject.get("access_token").getAsString();
-
-                                SessionManager sessionManager = new SessionManager(context);
-                                sessionManager.setBearer(accessToken);
-                            } catch (Exception e) {
-                                Log.e("JSON_PARSE_ERROR", "Ошибка при парсинге JSON", e);
+                        String responseBodyString;
+                        try (ResponseBody responseBody = response.body()) {
+                            if (responseBody == null) {
+                                callback.onFailure(new IOException("Пустой ответ от сервера"));
+                                return;
                             }
-                        }catch (Exception e){
-                            e.printStackTrace();
+
+                            responseBodyString = responseBody.string();
                         }
-                        callback.onResponse(response.body().string());
+
+                        try {
+                            JsonElement jsonElement = new JsonParser().parse(responseBodyString);
+                            Gson gson = new Gson();
+                            String json = gson.toJson(jsonElement);
+                            JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+
+                            String accessToken = jsonObject.get("access_token").getAsString();
+
+                            SessionManager sessionManager = new SessionManager(context);
+                            sessionManager.setBearer(accessToken);
+                        } catch (Exception e) {
+                            Log.e("JSON_PARSE_ERROR", "Ошибка при парсинге JSON", e);
+                        }
+
+                        callback.onResponse(responseBodyString);
                     } else {
                         callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
                     }
@@ -822,6 +826,43 @@ public class SupabaseClient {
         });
     }
 
+    public void getSentMails(Context context, SBC_Callback callback) {
+        JSONObject jsonBody = new JSONObject();
+        SessionManager sessionManager = new SessionManager(context);
+        try {
+            jsonBody.put("user_id", sessionManager.getUserId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, jsonBody.toString());
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + REST_PATH + "rpc/get_sent_letters")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse(response.body().string());
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
+                }
+            }
+        });
+    }
+
     public void updateRecipientVisibility(Context context, String id, SBC_Callback callback) {
         SessionManager sessionManager = new SessionManager(context);
         String userId = sessionManager.getUserId();
@@ -869,6 +910,471 @@ public class SupabaseClient {
                 }
             }
         });
+    }
+
+    public void updateFavouriteStatus(Context context, String id, Boolean status, SBC_Callback callback) {
+        SessionManager sessionManager = new SessionManager(context);
+        String userId = sessionManager.getUserId();
+        if (userId == null || userId.isEmpty()) {
+            callback.onFailure(new IOException("User ID не найден"));
+            return;
+        }
+
+        String url = DOMAIN_NAME + REST_PATH + "eletters?id=eq." + id;
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("favoutrite", status);
+        } catch (JSONException e) {
+            return;
+        }
+
+        RequestBody body = RequestBody.create(
+                jsonBody.toString(),
+                MediaType.get("application/json; charset=utf-8")
+        );
+
+        Request request = new Request.Builder()
+                .url(url)
+                .patch(body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=minimal")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse("Обновление прошло успешно");
+                } else {
+                    String errorBody = response.body() != null ? response.body().string() : "Неизвестная ошибка";
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code() + ", " + errorBody));
+                }
+            }
+        });
+    }
+
+    public void fetchGroupsByUserId(Context context, SBC_Callback callback) {
+        SessionManager sessionManager = new SessionManager(context);
+        String userId = sessionManager.getUserId();
+        if (userId == null || userId.isEmpty()) {
+            callback.onFailure(new IOException("User ID не найден"));
+            return;
+        }
+
+        String url = DOMAIN_NAME + "rest/v1/elettersGroup?select=id,tittle,color,user_id&user_id=eq." + userId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String body = response.body().string();
+                    callback.onResponse(body);
+                } else {
+                    String errorBody = response.body() != null ? response.body().string() : "Неизвестная ошибка";
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code() + ", " + errorBody));
+                }
+            }
+        });
+    }
+
+    public void addNewGroup(Context context, String title, String color, SBC_Callback callback) {
+        SessionManager sessionManager = new SessionManager(context);
+        String userId = sessionManager.getUserId();
+        if (userId == null || userId.isEmpty()) {
+            callback.onFailure(new IOException("User ID не найден"));
+            return;
+        }
+
+        String url = DOMAIN_NAME + "/rest/v1/elettersGroup";
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("tittle", title);
+            jsonObject.put("color", color);
+            jsonObject.put("user_id", userId);
+        } catch (JSONException e) {
+            return;
+        }
+
+        RequestBody body = RequestBody.create(
+                jsonObject.toString(),
+                MediaType.get("application/json")
+        );
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=minimal")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    String errorBody = response.body() != null ? response.body().string() : "Неизвестная ошибка";
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code() + ", " + errorBody));
+                }
+            }
+        });
+    }
+
+    public void updateGroupById(Context context, int groupId, String newTitle, String newColor, SBC_Callback callback) {
+        SessionManager sessionManager = new SessionManager(context);
+        String userId = sessionManager.getUserId();
+        if (userId == null || userId.isEmpty()) {
+            callback.onFailure(new IOException("User ID не найден"));
+            return;
+        }
+
+        String url = DOMAIN_NAME + "rest/v1/elettersGroup?id=eq." + groupId;
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            if (newTitle != null) jsonObject.put("tittle", newTitle);
+            if (newColor != null) jsonObject.put("color", newColor);
+        } catch (JSONException e) {
+            return;
+        }
+
+        RequestBody body = RequestBody.create(
+                jsonObject.toString(),
+                MediaType.get("application/json")
+        );
+
+        Request request = new Request.Builder()
+                .url(url)
+                .patch(body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=representation")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    String errorBody = response.body() != null ? response.body().string() : "Неизвестная ошибка";
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code() + ", " + errorBody));
+                }
+            }
+        });
+    }
+
+    public void deleteGroupWithCleanup(Context context, int groupId, SBC_Callback callback) {
+        SessionManager sessionManager = new SessionManager(context);
+        String userId = sessionManager.getUserId();
+        if (userId == null || userId.isEmpty()) {
+            callback.onFailure(new IOException("User ID не найден"));
+            return;
+        }
+
+        String updateUrl = DOMAIN_NAME + "/rest/v1/eletters?groupID=eq." + groupId;
+
+        JSONObject updateData = new JSONObject();
+        try {
+            updateData.put("groupID", JSONObject.NULL);
+        } catch (JSONException e) {
+            return;
+        }
+
+        RequestBody updateBody = RequestBody.create(
+                updateData.toString(),
+                MediaType.get("application/json")
+        );
+
+        Request updateRequest = new Request.Builder()
+                .url(updateUrl)
+                .patch(updateBody)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=representation")
+                .build();
+
+        client.newCall(updateRequest).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response updateResponse) throws IOException {
+                if (!updateResponse.isSuccessful()) {
+                    String err = updateResponse.body() != null ? updateResponse.body().string() : "Неизвестная ошибка";
+                    callback.onFailure(new IOException("Ошибка при обнулении group_id: " + updateResponse.code() + ", " + err));
+                    return;
+                }
+
+                String deleteUrl = DOMAIN_NAME + "/rest/v1/elettersGroup?id=eq." + groupId;
+
+                Request deleteRequest = new Request.Builder()
+                        .url(deleteUrl)
+                        .delete()
+                        .addHeader("apikey", API_KEY)
+                        .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                        .addHeader("Content-Type", "application/json")
+                        .build();
+
+                client.newCall(deleteRequest).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        callback.onFailure(e);
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response deleteResponse) throws IOException {
+                        if (deleteResponse.isSuccessful()) {
+                            callback.onResponse("Группа успешно удалена");
+                        } else {
+                            String err = deleteResponse.body() != null ? deleteResponse.body().string() : "Неизвестная ошибка";
+                            callback.onFailure(new IOException("Ошибка при удалении группы: " + deleteResponse.code() + ", " + err));
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    public void updateGroupId(Context context, String id, String groupid, SBC_Callback callback) {
+        SessionManager sessionManager = new SessionManager(context);
+        String userId = sessionManager.getUserId();
+        if (userId == null || userId.isEmpty()) {
+            callback.onFailure(new IOException("User ID не найден"));
+            return;
+        }
+
+        String url = DOMAIN_NAME + REST_PATH + "eletters?id=eq." + id;
+
+        JSONObject jsonBody = new JSONObject();
+        if (groupid == null){
+            try {
+                jsonBody.put("groupID", JSONObject.NULL);
+            } catch (JSONException e) {
+                return;
+            }
+        }
+        else{
+            try {
+                jsonBody.put("groupID", groupid);
+            } catch (JSONException e) {
+                return;
+            }
+        }
+
+
+        RequestBody body = RequestBody.create(
+                jsonBody.toString(),
+                MediaType.get("application/json; charset=utf-8")
+        );
+
+        Request request = new Request.Builder()
+                .url(url)
+                .patch(body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=minimal")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse("Обновление прошло успешно");
+                } else {
+                    String errorBody = response.body() != null ? response.body().string() : "Неизвестная ошибка";
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code() + ", " + errorBody));
+                }
+            }
+        });
+    }
+
+    public void createEletter(Context context, String content, String fileUrl, String recipientEmail, String theme, SBC_Callback callback) {
+        JSONObject jsonBody = new JSONObject();
+        SessionManager sessionManager = new SessionManager(context);
+
+        try {
+            jsonBody.put("content", content);
+            if (!fileUrl.equals(""))
+                jsonBody.put("file_url", fileUrl);
+            else
+                jsonBody.put("file_url", "{}");
+            jsonBody.put("id_sender", sessionManager.getUserId());
+            jsonBody.put("recipient_email", recipientEmail);
+            jsonBody.put("theme", theme);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.onFailure(new IOException("Ошибка формирования JSON"));
+            return;
+        }
+
+        MediaType mediaType = MediaType.get("application/json");
+        RequestBody body = RequestBody.create(mediaType, jsonBody.toString());
+
+        String url = DOMAIN_NAME + REST_PATH + "rpc/create_eletternew";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
+                }
+            }
+        });
+    }
+
+    public void uploadFileToSupabaseStorage(Context context, String content, String recipientEmail, String theme, Uri fileUri, SBC_Callback callback) {
+        String realPath = RealPathUtil.getRealPath(context, fileUri);
+        SessionManager sessionManager = new SessionManager(context);
+        if (realPath == null) {
+            callback.onFailure(new IOException("Не удалось получить путь файла"));
+            return;
+        }
+
+        File file = new File(realPath);
+
+        String uniqueFileName = "file_" + System.currentTimeMillis() + "_" + UUID.randomUUID() + getFileExtension(file);
+
+        String url = DOMAIN_NAME + "storage/v1/object/elettersfiles/" + uniqueFileName;
+
+        String mimeType = getMimeTypeByExtension(file);
+        if (mimeType == null) mimeType = "application/octet-stream";
+
+        MediaType mediaType = MediaType.get(mimeType);
+        RequestBody body = RequestBody.create(mediaType, file);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .put(body)
+                .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                .addHeader("apikey", API_KEY)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String fileUrl = DOMAIN_NAME + "storage/v1/object/public/elettersfiles/" + uniqueFileName;
+                    createEletter(context, content, fileUrl, recipientEmail, theme, new SBC_Callback() {
+                        @Override
+                        public void onFailure(IOException e) {
+
+                        }
+
+                        @Override
+                        public void onResponse(String responseBody) {
+
+                        }
+                    });
+                    callback.onResponse(fileUrl);
+                } else {
+                    callback.onFailure(new IOException("Ошибка загрузки файла: " + response.code()));
+                }
+            }
+        });
+    }
+
+    private String getFileExtension(File file) {
+        String name = file.getName();
+        int lastIndexOf = name.lastIndexOf(".");
+        if (lastIndexOf == -1) return "";
+        return name.substring(lastIndexOf);
+    }
+
+    public String getMimeTypeByExtension(File file) {
+        String fileName = file.getName();
+        int dotIndex = fileName.lastIndexOf(".");
+
+        if (dotIndex == -1 || dotIndex == fileName.length() - 1) {
+            return "application/octet-stream"; // Нет расширения
+        }
+
+        String ext = fileName.substring(dotIndex + 1).toLowerCase();
+
+        switch (ext) {
+            case "pdf":
+                return "application/pdf";
+            case "jpg":
+            case "jpeg":
+                return "image/jpeg";
+            case "png":
+                return "image/png";
+            case "doc":
+                return "application/msword";
+            case "docx":
+                return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            case "txt":
+                return "text/plain";
+            default:
+                return "application/octet-stream";
+        }
     }
 
     public interface SBC_Callback {

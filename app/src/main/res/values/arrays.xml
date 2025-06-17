@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="group_colors">
+        <item>Red</item>
+        <item>Orange</item>
+        <item>Yellow</item>
+        <item>Green</item>
+        <item>Cyan</item>
+        <item>Blue</item>
+        <item>Purple</item>
+    </string-array>
+
+    <string name="color_red">#FF0000</string>
+    <string name="color_orange">#FFA500</string>
+    <string name="color_yellow">#FFFF00</string>
+    <string name="color_green">#00FF00</string>
+    <string name="color_cyan">#00FFFF</string>
+    <string name="color_blue">#0000FF</string>
+    <string name="color_purple">#800080</string>
+
     <array name="default_money_range">
         <item>0</item>
         <item>100000</item>

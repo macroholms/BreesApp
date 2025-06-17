@@ -23,6 +23,10 @@ import androidx.core.view.WindowInsetsCompat;
 import com.chaos.view.PinView;
 import com.example.breesapp.R;
 import com.example.breesapp.classes.SessionManager;
+import com.example.breesapp.classes.SupabaseClient;
+import com.example.breesapp.models.LogRegRequest;
+
+import java.io.IOException;
 
 public class PinRegActivity extends AppCompatActivity {
 
@@ -116,7 +120,24 @@ public class PinRegActivity extends AppCompatActivity {
         }
         else{
             if (sessionManager.getPin().equals(password)){
-                toMain();
+                SupabaseClient supabaseClient = new SupabaseClient();
+                LogRegRequest request = new LogRegRequest(
+                        sessionManager.getEmail(),
+                        sessionManager.getPassword()
+                );
+                supabaseClient.login(request, new SupabaseClient.SBC_Callback() {
+                    @Override
+                    public void onFailure(IOException e) {
+
+                    }
+
+                    @Override
+                    public void onResponse(String responseBody) {
+                        runOnUiThread(()->{
+                            toMain();
+                        });
+                    }
+                });
             }
             else{
                 shakeView();
