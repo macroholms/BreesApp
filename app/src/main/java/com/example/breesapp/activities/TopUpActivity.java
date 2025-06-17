@@ -46,13 +46,16 @@ public class TopUpActivity extends AppCompatActivity {
 
                 if (!text.isEmpty()) {
                     try {
+                        conf.setEnabled(false);
                         value = Float.parseFloat(text);
                         SupabaseClient supabaseClient = new SupabaseClient();
                         supabaseClient.increaseBalance(getApplicationContext(), value,
                                 new SupabaseClient.SBC_Callback() {
                             @Override
                             public void onFailure(IOException e) {
-                                Log.e("!!!!", e.getMessage());
+                                runOnUiThread(()->{
+                                    conf.setEnabled(true);
+                                });
                             }
 
                             @Override

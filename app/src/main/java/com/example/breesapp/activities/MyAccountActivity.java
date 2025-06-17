@@ -124,18 +124,11 @@ public class MyAccountActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(IOException e) {
                             Log.e("UploadError", "Ошибка загрузки", e);
-                            runOnUiThread(() ->
-                                    Toast.makeText(getApplicationContext(),
-                                            "Ошибка загрузки фото: " + e.getMessage(),
-                                            Toast.LENGTH_LONG).show()
-                            );
                         }
 
                         @Override
                         public void onResponse(String responseBody) {
                             runOnUiThread(() -> {
-                                Toast.makeText(getApplicationContext(), "Фото загружено"
-                                        , Toast.LENGTH_SHORT).show();
 
                                 if (sessionManager.getAvatar().equals("default")){
                                     supabaseClient.updateAvatarUrlInDatabase(getApplicationContext(), fileName,
@@ -183,21 +176,6 @@ public class MyAccountActivity extends AppCompatActivity {
             selectedImageUri = data.getData();
 
             imageView.setImageURI(selectedImageUri);
-        }
-    }
-
-    public String getRealPathFromURI(Uri contentUri, Context context) {
-        Cursor cursor = null;
-        try {
-            String[] proj = { MediaStore.Images.Media.DATA };
-            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
         }
     }
 }

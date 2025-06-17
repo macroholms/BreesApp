@@ -75,7 +75,11 @@ public class NotificationsFragment extends Fragment {
         supabaseClient.fetchGroupsByUserId(getContext(), new SupabaseClient.SBC_Callback() {
             @Override
             public void onFailure(IOException e) {
-                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Ошибка загрузки групп", Toast.LENGTH_SHORT).show());
+                if (isAdded() && getActivity() != null && !getActivity().isFinishing()) {
+                    getActivity().runOnUiThread(() -> {
+                        Toast.makeText(getContext(), R.string.error_group_load, Toast.LENGTH_SHORT).show();
+                    });
+                }
             }
 
             @Override
@@ -95,7 +99,11 @@ public class NotificationsFragment extends Fragment {
                     }
                     Log.d("GROUPS", "Loaded groups count: " + groupList.size());
                     Log.d("DRAWER_ITEMS", "Total items in drawer: " + drawerItems.size());
-                    getActivity().runOnUiThread(() -> drawerAdapter.notifyDataSetChanged());
+                    if (isAdded() && !isDetached()) {
+                        requireActivity().runOnUiThread(() -> {
+                            drawerAdapter.notifyDataSetChanged();
+                        });
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -129,7 +137,9 @@ public class NotificationsFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.filter(s.toString());
+                if (adapter != null) {
+                    adapter.filter(s.toString());
+                }
             }
 
             @Override
@@ -153,6 +163,7 @@ public class NotificationsFragment extends Fragment {
                 new DrawerAdapter.OnMenuItemClickListener() {
                     @Override
                     public void onMenuItemClick(DrawerMenuItem item) {
+                        if (adapter != null){
                         if (item.getTitle().equals("Inbox")) {
                             groupTittle.setText("Inbox");
                             adapter.setData(emailItems);
@@ -173,6 +184,7 @@ public class NotificationsFragment extends Fragment {
                             }
                             adapter.setData(filtered);
                             adapter.notifyDataSetChanged();
+                        }
                         }
                     }
                 },
@@ -285,8 +297,7 @@ public class NotificationsFragment extends Fragment {
         supabaseClient.getReceivedMails(getContext(), new SupabaseClient.SBC_Callback() {
             @Override
             public void onFailure(IOException e) {
-                getActivity().runOnUiThread(()->{
-                    Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                requireActivity().runOnUiThread(()->{
                 });
             }
 
@@ -300,71 +311,78 @@ public class NotificationsFragment extends Fragment {
                             emailItems.add(parseEmail(jsonObject));
                         }
                     }
-                    adapter = new EmailAdapter(getContext(), getActivity(), emailItems, new EmailAdapter.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(EmailItem item) {
-                            Intent intent = new Intent(getContext(), EmailItemViewActivity.class);
-                            intent.putExtra("email_item", item);
-                            startActivity(intent);
-                        }
-
-                        @Override
-                        public void onDeleteClick(EmailItem item) {
-                            supabaseClient.updateRecipientVisibility(getContext(),
-                                    String.valueOf(item.getId()), new SupabaseClient.SBC_Callback() {
+                    if (isAdded() && getActivity() != null && !getActivity().isFinishing()) {
+                        getActivity().runOnUiThread(() -> {
+                            adapter = new EmailAdapter(getContext(), requireActivity(), emailItems, new EmailAdapter.OnItemClickListener() {
                                 @Override
-                                public void onFailure(IOException e) {
-                                    getActivity().runOnUiThread(()->{
-                                        Toast.makeText(getContext(), "ERRor", Toast.LENGTH_SHORT).show();
+                                public void onItemClick(EmailItem item) {
+                                    Intent intent = new Intent(getContext(), EmailItemViewActivity.class);
+                                    intent.putExtra("email_item", item);
+                                    startActivity(intent);
+                                }
+
+                                @Override
+                                public void onDeleteClick(EmailItem item) {
+                                    supabaseClient.updateRecipientVisibility(getContext(),
+                                            String.valueOf(item.getId()), new SupabaseClient.SBC_Callback() {
+                                                @Override
+                                                public void onFailure(IOException e) {
+                                                }
+
+                                                @Override
+                                                public void onResponse(String responseBody) {
+                                                    requireActivity().runOnUiThread(()->{
+                                                        refreshEmails();
+                                                    });
+                                                }
+                                            });
+                                }
+
+                                @Override
+                                public void onAddToGroupClick(EmailItem item) {
+                                    requireActivity().runOnUiThread(()->{
+                                        showGroupDialog(item);
                                     });
                                 }
 
                                 @Override
-                                public void onResponse(String responseBody) {
-                                    getActivity().runOnUiThread(()->{
-                                        refreshEmails();
-                                    });
-                                }
-                            });
-                        }
+                                public void onDeleteFromGroupClick(EmailItem item) {
+                                    if (item.getGroupID() != null){
+                                        supabaseClient.updateGroupId(getContext(), String.valueOf(item.getId()), null, new SupabaseClient.SBC_Callback() {
+                                            @Override
+                                            public void onFailure(IOException e) {
 
-                        @Override
-                        public void onAddToGroupClick(EmailItem item) {
-                            getActivity().runOnUiThread(()->{
-                                showGroupDialog(item);
-                            });
-                        }
+                                            }
 
-                        @Override
-                        public void onDeleteFromGroupClick(EmailItem item) {
-                            if (item.getGroupID() != null){
-                                supabaseClient.updateGroupId(getContext(), String.valueOf(item.getId()), null, new SupabaseClient.SBC_Callback() {
-                                    @Override
-                                    public void onFailure(IOException e) {
-
-                                    }
-
-                                    @Override
-                                    public void onResponse(String responseBody) {
-                                        item.setGroupID(null);
-                                        filtered.remove(item);
-                                        getActivity().runOnUiThread(()->{
-                                            adapter.notifyDataSetChanged();
-                                            Toast.makeText(getContext(), R.string.success1, Toast.LENGTH_SHORT).show();
+                                            @Override
+                                            public void onResponse(String responseBody) {
+                                                item.setGroupID(null);
+                                                filtered.remove(item);
+                                                requireActivity().runOnUiThread(()->{
+                                                    adapter.notifyDataSetChanged();
+                                                    Toast.makeText(getContext(), R.string.success1, Toast.LENGTH_SHORT).show();
+                                                });
+                                            }
                                         });
                                     }
-                                });
+                                    else{
+                                        requireActivity().runOnUiThread(()->{
+                                            Toast.makeText(getContext(), R.string.letter_not_in_group, Toast.LENGTH_SHORT).show();
+                                        });
+                                    }
+                                }
+                            });
+                        });
+                    }
+
+                    if (isAdded() && !isDetached() && requireActivity() != null && !requireActivity().isFinishing()) {
+                        requireActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                emailsRv.setAdapter(adapter);
                             }
-                            else{
-                                getActivity().runOnUiThread(()->{
-                                    Toast.makeText(getContext(), R.string.letter_not_in_group, Toast.LENGTH_SHORT).show();
-                                });
-                            }
-                        }
-                    });
-                    getActivity().runOnUiThread(()->{
-                        emailsRv.setAdapter(adapter);
-                    });
+                        });
+                    }
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -391,9 +409,6 @@ public class NotificationsFragment extends Fragment {
                     }
 
                 } catch (JSONException e) {
-                    getActivity().runOnUiThread(() -> {
-                        Toast.makeText(getContext(), "Ошибка парсинга", Toast.LENGTH_SHORT).show();
-                    });
                 }
             }
         });
@@ -409,10 +424,6 @@ public class NotificationsFragment extends Fragment {
         supabaseClient.getReceivedMails(getContext(), new SupabaseClient.SBC_Callback() {
             @Override
             public void onFailure(IOException e) {
-                getActivity().runOnUiThread(() -> {
-                    Toast.makeText(getContext(), "Ошибка загрузки", Toast.LENGTH_SHORT).show();
-                    swipeRefreshLayout.setRefreshing(false);
-                });
             }
 
             @Override
@@ -426,16 +437,12 @@ public class NotificationsFragment extends Fragment {
                         }
                     }
 
-                    getActivity().runOnUiThread(() -> {
+                    requireActivity().runOnUiThread(() -> {
                         adapter.notifyDataSetChanged();
                         swipeRefreshLayout.setRefreshing(false);
                     });
 
                 } catch (JSONException e) {
-                    getActivity().runOnUiThread(() -> {
-                        Toast.makeText(getContext(), "Ошибка парсинга", Toast.LENGTH_SHORT).show();
-                        swipeRefreshLayout.setRefreshing(false);
-                    });
                 }
             }
         });
@@ -472,7 +479,7 @@ public class NotificationsFragment extends Fragment {
 
                 dialog.dismiss();
             } else {
-                Toast.makeText(getContext(), "Введите название группы", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.enter_group_name, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -511,7 +518,7 @@ public class NotificationsFragment extends Fragment {
 
                 dialog.dismiss();
             } else {
-                Toast.makeText(getContext(), "Введите название группы", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.enter_group_name, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -550,7 +557,7 @@ public class NotificationsFragment extends Fragment {
                     @Override
                     public void onResponse(String responseBody) {
                         emailItem.setGroupID(item.getGroup().getId());
-                        getActivity().runOnUiThread(()->{
+                        requireActivity().runOnUiThread(()->{
                             dialog.dismiss();
                         });
                     }
@@ -598,7 +605,6 @@ public class NotificationsFragment extends Fragment {
         supabaseClient.addNewGroup(getContext(), Tittle, Color, new SupabaseClient.SBC_Callback() {
             @Override
             public void onFailure(IOException e) {
-                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Ошибка сохранения", Toast.LENGTH_SHORT).show());
             }
 
             @Override
@@ -611,7 +617,6 @@ public class NotificationsFragment extends Fragment {
         supabaseClient.updateGroupById(getContext(), id,Tittle, Color, new SupabaseClient.SBC_Callback() {
             @Override
             public void onFailure(IOException e) {
-                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Ошибка сохранения", Toast.LENGTH_SHORT).show());
             }
 
             @Override
@@ -639,11 +644,10 @@ public class NotificationsFragment extends Fragment {
 
                     @Override
                     public void onResponse(String responseBody) {
-                        getActivity().runOnUiThread(()->{
-                            Toast.makeText(getContext(), "Delete successful", Toast.LENGTH_SHORT).show();
+                        requireActivity().runOnUiThread(()->{
                             groupList.remove(item1);
                             drawerItems.remove(item2);
-                            getActivity().runOnUiThread(()->{
+                            requireActivity().runOnUiThread(()->{
                                 drawerAdapter.notifyDataSetChanged();
                             });
                         });

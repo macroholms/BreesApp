@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
-import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 
@@ -423,7 +423,7 @@ public class SupabaseClient {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    updateAvatarUrlInDatabase(context, url, callback);
+                    updateAvatarUrlInDatabase(context, fileName, callback);
                 } else {
                     String errorBody = response.body() != null ? response.body().string() : "Empty response";
                     callback.onFailure(new IOException("Upload failed: " + response.code() + ", Body: " + errorBody));
@@ -446,7 +446,7 @@ public class SupabaseClient {
         RequestBody body = RequestBody.create(
                 MediaType.get("application/json"), jsonBody.toString());
 
-        String updateUrl = DOMAIN_NAME + "/rest/v1/users?id=eq." + userId;
+        String updateUrl = DOMAIN_NAME + "rest/v1/profiles?id=eq." + userId;
 
         Request request = new Request.Builder()
                 .url(updateUrl)
@@ -1235,19 +1235,17 @@ public class SupabaseClient {
         });
     }
 
-    public void createEletter(Context context, String content, String fileUrl, String recipientEmail, String theme, SBC_Callback callback) {
+    public void createEletter(Context context, String content, String recipientEmail, String theme, SBC_Callback callback) {
         JSONObject jsonBody = new JSONObject();
         SessionManager sessionManager = new SessionManager(context);
 
         try {
             jsonBody.put("content", content);
-            if (!fileUrl.equals(""))
-                jsonBody.put("file_url", fileUrl);
-            else
-                jsonBody.put("file_url", "{}");
+            jsonBody.put("file_url", JSONObject.NULL);
             jsonBody.put("id_sender", sessionManager.getUserId());
             jsonBody.put("recipient_email", recipientEmail);
             jsonBody.put("theme", theme);
+
         } catch (JSONException e) {
             e.printStackTrace();
             callback.onFailure(new IOException("Ошибка формирования JSON"));
@@ -1257,7 +1255,7 @@ public class SupabaseClient {
         MediaType mediaType = MediaType.get("application/json");
         RequestBody body = RequestBody.create(mediaType, jsonBody.toString());
 
-        String url = DOMAIN_NAME + REST_PATH + "rpc/create_eletternew";
+        String url = DOMAIN_NAME + REST_PATH + "rpc/create_eletter";
 
         Request request = new Request.Builder()
                 .url(url)
@@ -1279,7 +1277,9 @@ public class SupabaseClient {
                     String responseBody = response.body().string();
                     callback.onResponse(responseBody);
                 } else {
-                    callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
+                    String errorBody = response.body() != null ? response.body().string() : "No body";
+                    Log.e("API_ERROR", "Status code: " + response.code() + ", Body: " + errorBody);
+                    callback.onFailure(new IOException("Ошибка сервера: " + errorBody));
                 }
             }
         });
@@ -1322,15 +1322,49 @@ public class SupabaseClient {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String fileUrl = DOMAIN_NAME + "storage/v1/object/public/elettersfiles/" + uniqueFileName;
-                    createEletter(context, content, fileUrl, recipientEmail, theme, new SBC_Callback() {
-                        @Override
-                        public void onFailure(IOException e) {
 
+                    JSONObject jsonBody = new JSONObject();
+
+                    try {
+                        jsonBody.put("content", content);
+                        jsonBody.put("file_url", fileUrl);
+                        jsonBody.put("id_sender", sessionManager.getUserId());
+                        jsonBody.put("recipient_email", recipientEmail);
+                        jsonBody.put("theme", theme);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        callback.onFailure(new IOException("Ошибка формирования JSON"));
+                        return;
+                    }
+
+                    MediaType mediaType = MediaType.get("application/json");
+                    RequestBody body = RequestBody.create(mediaType, jsonBody.toString());
+
+                    String url = DOMAIN_NAME + REST_PATH + "rpc/create_eletternew";
+
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .post(body)
+                            .addHeader("Content-Type", "application/json")
+                            .addHeader("apikey", API_KEY)
+                            .addHeader("Authorization", "Bearer " + sessionManager.getBearerToken())
+                            .build();
+
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                            callback.onFailure(e);
                         }
 
                         @Override
-                        public void onResponse(String responseBody) {
-
+                        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                            if (response.isSuccessful()) {
+                                String responseBody = response.body().string();
+                                callback.onResponse(responseBody);
+                            } else {
+                                callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
+                            }
                         }
                     });
                     callback.onResponse(fileUrl);
@@ -1353,7 +1387,7 @@ public class SupabaseClient {
         int dotIndex = fileName.lastIndexOf(".");
 
         if (dotIndex == -1 || dotIndex == fileName.length() - 1) {
-            return "application/octet-stream"; // Нет расширения
+            return "application/octet-stream";
         }
 
         String ext = fileName.substring(dotIndex + 1).toLowerCase();

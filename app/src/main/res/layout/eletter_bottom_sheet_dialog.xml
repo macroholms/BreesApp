@@ -5,7 +5,6 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Верхняя панель с кнопками -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,36 +36,32 @@
             android:background="?attr/selectableItemBackground"/>
     </LinearLayout>
 
-    <!-- Поле ввода Email -->
     <EditText
         android:id="@+id/et_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email получателя"
+        android:hint="@string/recipient_email"
         android:inputType="textEmailAddress"
         android:layout_marginTop="16dp"/>
 
-    <!-- Поле ввода Темы -->
     <EditText
         android:id="@+id/et_subject"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Тема письма"
+        android:hint="@string/letter_theme"
         android:layout_marginTop="8dp"/>
 
-    <!-- Поле ввода Текста письма -->
     <EditText
         android:id="@+id/et_message"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:hint="Текст сообщения..."
+        android:hint="@string/letter_text"
         android:inputType="textMultiLine"
         android:minLines="3"
         android:gravity="top"
         android:layout_marginTop="8dp"/>
 
-    <!-- Кнопка прикрепления файла -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

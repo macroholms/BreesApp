@@ -105,4 +105,12 @@
     <string name="letter_not_in_group">Письмо не в группе</string>
     <string name="success1">Успех</string>
     <string name="error">Ошибка</string>
+    <string name="recipient_email">Почта получателя</string>
+    <string name="letter_theme">Тема письма</string>
+    <string name="letter_text">Текст письма...</string>
+    <string name="you_can_t_transfer_money_to_yourself">Вы не можете переводить деньги самому себе</string>
+    <string name="enter_group_name">Введите имя группы</string>
+    <string name="error_profile_load">Ошибка загрузки профиля</string>
+    <string name="file_attached">Файл выбран</string>
+    <string name="error_group_load">Ошибка загрузки групп</string>
 </resources>

@@ -58,11 +58,19 @@ public class SessionManager {
         return null;
     }
 
+    public void setPassword(String password){
+        try {
+            sharedPreferences.edit().putString(KEY_PASSWORD, Crypt.encrypt(password)).apply();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String getBearerToken() {
         return sharedPreferences.getString(KEY_BEARER_TOKEN, null);
     }
     public void setBearer(String Token){
-        sharedPreferences.edit().putString(KEY_BEARER_TOKEN, Token);
+        sharedPreferences.edit().putString(KEY_BEARER_TOKEN, Token).apply();
     }
 
     public String getUserId() {

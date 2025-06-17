@@ -14,6 +14,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.breesapp.R;
+import com.example.breesapp.classes.SessionManager;
 import com.example.breesapp.classes.SupabaseClient;
 import com.example.breesapp.classes.Validator;
 import com.google.android.material.textfield.TextInputEditText;
@@ -43,33 +44,41 @@ public class TransactionActivity extends AppCompatActivity {
         amount = findViewById(R.id.AmountTextField1);
 
         Button btn = findViewById(R.id.btn_Conf);
+        SessionManager sessionManager = new SessionManager(getApplicationContext());
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!email.getText().toString().trim().equals("")){
                     if (Validator.isValidEmail(email.getText().toString().trim())){
                         if (!amount.getText().toString().trim().equals("")){
-                            supabaseClient.transferMoney(getApplicationContext(),
-                                    email.getText().toString().trim(),
-                                    Float.parseFloat(amount.getText().toString().trim()),
-                                    new SupabaseClient.SBC_Callback() {
-                                        @Override
-                                        public void onFailure(IOException e) {
-                                            runOnUiThread(()->{
-                                                Toast.makeText(getApplicationContext(),
-                                                        "Transfer error", Toast.LENGTH_SHORT).show();
-                                            });
-                                        }
+                            if (!email.getText().toString().trim().equals(sessionManager.getEmail())){
+                                btn.setEnabled(false);
+                                supabaseClient.transferMoney(getApplicationContext(),
+                                        email.getText().toString().trim(),
+                                        Float.parseFloat(amount.getText().toString().trim()),
+                                        new SupabaseClient.SBC_Callback() {
+                                            @Override
+                                            public void onFailure(IOException e) {
+                                                runOnUiThread(()->{
+                                                    btn.setEnabled(true);
+                                                    Toast.makeText(getApplicationContext(),
+                                                            "Transfer error", Toast.LENGTH_SHORT).show();
+                                                });
+                                            }
 
-                                        @Override
-                                        public void onResponse(String responseBody) {
-                                            Intent i = new Intent(new Intent(getApplicationContext(),
-                                                    GlossyActivity.class));
-                                            i.putExtra("status", "transaction");
-                                            startActivity(i);
-                                            finish();
-                                        }
-                                    });
+                                            @Override
+                                            public void onResponse(String responseBody) {
+                                                Intent i = new Intent(new Intent(getApplicationContext(),
+                                                        GlossyActivity.class));
+                                                i.putExtra("status", "transaction");
+                                                startActivity(i);
+                                                finish();
+                                            }
+                                        });
+                            }else{
+                                Toast.makeText(getApplicationContext(),
+                                        R.string.you_can_t_transfer_money_to_yourself, Toast.LENGTH_SHORT).show();
+                            }
                         }
                         else{
                             Toast.makeText(getApplicationContext(),

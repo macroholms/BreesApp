@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.breesapp.R;
 import com.example.breesapp.classes.SessionManager;
 import com.example.breesapp.classes.SupabaseClient;
+import com.example.breesapp.classes.Validator;
 import com.example.breesapp.models.AuthResponse;
 import com.example.breesapp.models.DataBinding;
 import com.example.breesapp.models.LogRegRequest;
@@ -72,47 +73,47 @@ public class LoginActivity extends AppCompatActivity {
         SupabaseClient supabaseClient = new SupabaseClient();
         LogRegRequest request = new LogRegRequest(email, password);
 
-        supabaseClient.login(request, new SupabaseClient.SBC_Callback() {
-            @Override
-            public void onFailure(IOException e) {
-                runOnUiThread(() ->
-                        Toast.makeText(getApplicationContext(), "Ошибка входа: " + e.getMessage(), Toast.LENGTH_LONG).show()
-                );
-            }
+        if (Validator.isValidEmail(email)){
+            supabaseClient.login(request, new SupabaseClient.SBC_Callback() {
+                @Override
+                public void onFailure(IOException e) {
+                }
 
-            @Override
-            public void onResponse(String responseBody) {
-                runOnUiThread(() -> {
-                    Gson gson = new Gson();
-                    AuthResponse auth = gson.fromJson(responseBody, AuthResponse.class);
+                @Override
+                public void onResponse(String responseBody) {
+                    runOnUiThread(() -> {
+                        Gson gson = new Gson();
+                        AuthResponse auth = gson.fromJson(responseBody, AuthResponse.class);
 
-                    if (auth == null || auth.getAccess_token() == null) {
-                        Toast.makeText(LoginActivity.this, "Ошибка: не удалось получить токен", Toast.LENGTH_LONG).show();
-                        return;
-                    }
+                        if (auth == null || auth.getAccess_token() == null) {
+                            return;
+                        }
 
-                    SessionManager sessionManager = new SessionManager(getApplicationContext());
-                    sessionManager.createLoginSession(
-                            email,
-                            password,
-                            auth.getAccess_token(),
-                            auth.getUser().getId()
-                    );
+                        SessionManager sessionManager = new SessionManager(getApplicationContext());
+                        sessionManager.createLoginSession(
+                                email,
+                                password,
+                                auth.getAccess_token(),
+                                auth.getUser().getId()
+                        );
 
-                    DataBinding.init(getApplicationContext());
-                    SharedPreferences sharedPref = getSharedPreferences("user_session", MODE_PRIVATE);
-                    if (DataBinding.getStatus() == "unlogined" || !sharedPref.contains("pin")){
-                        sharedPref.edit().remove("pin").apply();
-                        DataBinding.logined();
-                        startActivity(new Intent(getApplicationContext(), PinRegActivity.class));
-                        finish();
-                    }else{
-                        DataBinding.logined();
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                        finish();
-                    }
-                });
-            }
-        });
+                        DataBinding.init(getApplicationContext());
+                        SharedPreferences sharedPref = getSharedPreferences("user_session", MODE_PRIVATE);
+                        if (DataBinding.getStatus() == "unlogined" || !sharedPref.contains("pin")){
+                            sharedPref.edit().remove("pin").apply();
+                            DataBinding.logined();
+                            startActivity(new Intent(getApplicationContext(), PinRegActivity.class));
+                            finish();
+                        }else{
+                            DataBinding.logined();
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            finish();
+                        }
+                    });
+                }
+            });
+        }else {
+            Toast.makeText(getApplicationContext(), R.string.email_error, Toast.LENGTH_SHORT).show();
+        }
     }
 }

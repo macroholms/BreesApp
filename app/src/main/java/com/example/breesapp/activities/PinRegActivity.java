@@ -24,7 +24,9 @@ import com.chaos.view.PinView;
 import com.example.breesapp.R;
 import com.example.breesapp.classes.SessionManager;
 import com.example.breesapp.classes.SupabaseClient;
+import com.example.breesapp.models.AuthResponse;
 import com.example.breesapp.models.LogRegRequest;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 
@@ -125,19 +127,7 @@ public class PinRegActivity extends AppCompatActivity {
                         sessionManager.getEmail(),
                         sessionManager.getPassword()
                 );
-                supabaseClient.login(request, new SupabaseClient.SBC_Callback() {
-                    @Override
-                    public void onFailure(IOException e) {
-
-                    }
-
-                    @Override
-                    public void onResponse(String responseBody) {
-                        runOnUiThread(()->{
-                            toMain();
-                        });
-                    }
-                });
+                logIN(supabaseClient, request);
             }
             else{
                 shakeView();
@@ -177,5 +167,30 @@ public class PinRegActivity extends AppCompatActivity {
             pinView2.setTextColor(
                     ResourcesCompat.getColor(getResources(), R.color.gray, getTheme()));
         }, 250);
+    }
+
+    public void logIN(SupabaseClient supabaseClient, LogRegRequest request){
+        supabaseClient.login(request, new SupabaseClient.SBC_Callback() {
+            @Override
+            public void onFailure(IOException e) {
+                logIN(supabaseClient, request);
+            }
+
+            @Override
+            public void onResponse(String responseBody) {
+                runOnUiThread(()->{
+                    Gson gson = new Gson();
+                    AuthResponse auth = gson.fromJson(responseBody, AuthResponse.class);
+
+                    if (auth == null || auth.getAccess_token() == null) {
+                        return;
+                    }
+
+                    SessionManager sessionManager = new SessionManager(getApplicationContext());
+                    sessionManager.setBearer(auth.getAccess_token());
+                    toMain();
+                });
+            }
+        });
     }
 }

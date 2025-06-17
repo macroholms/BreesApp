@@ -76,7 +76,6 @@ public class PasswordRecoveryFourth extends Fragment {
 
         Bundle arguments = getArguments();
         if (arguments == null || !arguments.containsKey("email")) {
-            Toast.makeText(getContext(), "Invalid arguments", Toast.LENGTH_SHORT).show();
             getParentFragmentManager().popBackStack();
             return view;
         }
@@ -127,8 +126,6 @@ public class PasswordRecoveryFourth extends Fragment {
         supabaseClient.updateUserPassword(getContext(), newPassword, new SupabaseClient.SBC_Callback() {
             @Override
             public void onFailure(IOException e) {
-                Toast.makeText(getContext(), "Ошибка: " + e.getMessage(),
-                        Toast.LENGTH_SHORT).show();
             }
 
             @Override

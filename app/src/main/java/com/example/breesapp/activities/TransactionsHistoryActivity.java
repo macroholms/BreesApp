@@ -111,9 +111,6 @@ public class TransactionsHistoryActivity extends AppCompatActivity {
                 supabaseClient.fetchProfiles(getApplicationContext(), new SupabaseClient.SBC_Callback() {
                     @Override
                     public void onFailure(IOException e) {
-                        new Handler(Looper.getMainLooper()).post(() ->
-                                Toast.makeText(getApplicationContext(), "Ошибка загрузки профиля: " + e.getMessage(), Toast.LENGTH_LONG).show()
-                        );
                     }
 
                     @Override
@@ -146,9 +143,6 @@ public class TransactionsHistoryActivity extends AppCompatActivity {
                                 });
                                 recyclerView.setAdapter(adapter);
                             } catch (Exception e) {
-                                runOnUiThread(()->{
-                                    Toast.makeText(getApplicationContext(), "Ошибка парсинга данных", Toast.LENGTH_SHORT).show();
-                                });
                             }
                         });
                     }

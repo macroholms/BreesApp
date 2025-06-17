@@ -74,7 +74,7 @@ public class EmailItemViewActivity extends AppCompatActivity {
 
             if (!email.getFileUrl().toString().contains("{}")) {
                 btnDownloadFile.setVisibility(android.view.View.VISIBLE);
-                String fileUrlObj = "https://nrwxeidhsclzffyojfvq.supabase.co/storage/v1/object/public/elettersfiles//" + email.getFileUrl();
+                String fileUrlObj = (String) email.getFileUrl();
                 btnDownloadFile.setOnClickListener(v -> {
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrlObj));
                     startActivity(browserIntent);
@@ -83,7 +83,6 @@ public class EmailItemViewActivity extends AppCompatActivity {
                 btnDownloadFile.setVisibility(android.view.View.GONE);
             }
         } else {
-            Toast.makeText(this, "Ошибка: данные не найдены", Toast.LENGTH_SHORT).show();
             finish();
         }
     }

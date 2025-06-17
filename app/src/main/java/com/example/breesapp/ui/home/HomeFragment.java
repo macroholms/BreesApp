@@ -114,8 +114,7 @@ public class HomeFragment extends Fragment {
                 new Handler(Looper.getMainLooper()).post(() ->
                         getActivity().runOnUiThread(() ->{
                             Toast.makeText(getContext(),
-                                    "Ошибка загрузки профиля: "
-                                            + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    R.string.error_profile_load, Toast.LENGTH_LONG).show();
                         })
                 );
             }
@@ -130,7 +129,7 @@ public class HomeFragment extends Fragment {
                         if (profiles != null && profiles.length > 0) {
                             UserModel profile = profiles[0];
 
-                            SessionManager sessionManager = new SessionManager(getContext());
+                            SessionManager sessionManager = new SessionManager(requireContext());
                             sessionManager.setName(profile.getFull_name());
 
                             if (profile.getAvatar_url() != null && !profile.getAvatar_url().isEmpty()) {
@@ -158,14 +157,8 @@ public class HomeFragment extends Fragment {
                                         .into(avatar);
                             }
                         } else {
-                            getActivity().runOnUiThread(()->{
-                                Toast.makeText(getContext(), "Профиль не найден", Toast.LENGTH_SHORT).show();
-                            });
                         }
                     } catch (Exception e) {
-                        getActivity().runOnUiThread(()->{
-                            Toast.makeText(getContext(), "Ошибка парсинга данных", Toast.LENGTH_SHORT).show();
-                        });
                     }
                 });
             }
@@ -180,7 +173,6 @@ public class HomeFragment extends Fragment {
             try {
                 return supabaseClient.fetchTransactions(getContext());
             } catch (IOException e) {
-                Log.e("FetchDataAsync", "Ошибка при получении данных", e);
                 return null;
             }
         }
@@ -194,9 +186,6 @@ public class HomeFragment extends Fragment {
                 supabaseClient.fetchProfiles(getContext(), new SupabaseClient.SBC_Callback() {
                     @Override
                     public void onFailure(IOException e) {
-                        new Handler(Looper.getMainLooper()).post(() ->
-                                Toast.makeText(getContext(), "Ошибка загрузки профиля: " + e.getMessage(), Toast.LENGTH_LONG).show()
-                        );
                     }
 
                     @Override
@@ -208,15 +197,10 @@ public class HomeFragment extends Fragment {
                                 combinedMoneyAdapter = new CombinedMoneyAdapter(firstThreeItems, getContext(), profiles);
                                 recyclerView.setAdapter(combinedMoneyAdapter);
                             } catch (Exception e) {
-                                getActivity().runOnUiThread(()->{
-                                    Toast.makeText(getContext(), "Ошибка парсинга данных", Toast.LENGTH_SHORT).show();
-                                });
-
                             }
                         });
                     }
                 });
-
             } else {
             }
         }

@@ -231,7 +231,7 @@ public class GroupedTransactionAdapter extends RecyclerView.Adapter<RecyclerView
 
         List<GroupedItem> result = new ArrayList<>();
 
-        for (GroupedItem item : filteredByDateItems) { // <-- теперь работает с filteredByDateItems
+        for (GroupedItem item : filteredByDateItems) {
             if (item.getType() == GroupedItem.TYPE_HEADER) {
                 result.add(item);
             } else if (item.getType() == GroupedItem.TYPE_ITEM) {

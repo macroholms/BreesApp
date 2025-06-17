@@ -54,7 +54,7 @@ public class EmailBottomSheetDialog extends BottomSheetDialog {
             fragment.startActivityForResult(intent, PICK_FILE_REQUEST);
         });
 
-        btnSend.setOnClickListener(v -> sendEmail(fragment));
+        btnSend.setOnClickListener(v -> sendEmail(fragment, btnSend));
     }
 
     private void setupBottomSheetHeight(Activity activity) {
@@ -80,16 +80,17 @@ public class EmailBottomSheetDialog extends BottomSheetDialog {
     public void handleActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == PICK_FILE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             attachedFileUri = data.getData();
-            tvAttachedFile.setText("Файл выбран");
+            tvAttachedFile.setText(R.string.file_attached);
         }
     }
 
-    private void sendEmail(Fragment fragment) {
+    private void sendEmail(Fragment fragment, TextView btn) {
         String emailTo = etEmail.getText().toString();
         String subject = etSubject.getText().toString();
         String message = etMessage.getText().toString();
 
         SupabaseClient supabaseClient = new SupabaseClient();
+        btn.setClickable(false);
 
         if (Validator.isValidEmail(emailTo)){
             if (attachedFileUri != null){
@@ -97,6 +98,7 @@ public class EmailBottomSheetDialog extends BottomSheetDialog {
                     @Override
                     public void onFailure(IOException e) {
                         fragment.getActivity().runOnUiThread(()->{
+                            btn.setClickable(true);
                             Toast.makeText(getContext(), R.string.error, Toast.LENGTH_SHORT);
                         });
                     }
@@ -109,10 +111,11 @@ public class EmailBottomSheetDialog extends BottomSheetDialog {
                     }
                 });
             }else{
-                supabaseClient.createEletter(getContext(), message, "", emailTo, subject, new SupabaseClient.SBC_Callback() {
+                supabaseClient.createEletter(getContext(), message, emailTo, subject, new SupabaseClient.SBC_Callback() {
                     @Override
                     public void onFailure(IOException e) {
                         fragment.getActivity().runOnUiThread(()->{
+                            btn.setClickable(true);
                             Toast.makeText(getContext(), R.string.error, Toast.LENGTH_SHORT);
                         });
                     }

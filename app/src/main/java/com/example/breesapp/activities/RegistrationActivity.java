@@ -94,7 +94,6 @@ public class RegistrationActivity extends AppCompatActivity {
                                     @Override
                                     public void onFailure(IOException e) {
                                         runOnUiThread(() -> {
-                                            Toast.makeText(RegistrationActivity.this, "Ошибка регистрации", Toast.LENGTH_SHORT).show();
                                             Log.e("ERROR", e.getMessage().toString());
                                         });
                                     }
@@ -102,44 +101,20 @@ public class RegistrationActivity extends AppCompatActivity {
                                     @Override
                                     public void onResponse(String responseBody) {
                                         runOnUiThread(() -> {
-                                            Toast.makeText(RegistrationActivity.this, "Регистрация успешна", Toast.LENGTH_SHORT).show();
                                             Log.d("registr:onResponse", responseBody);
 
                                             Gson gson = new Gson();
                                             AuthResponse auth = gson.fromJson(responseBody, AuthResponse.class);
 
                                             if (auth == null || auth.getAccess_token() == null) {
-                                                Toast.makeText(RegistrationActivity.this, "Не удалось получить токен", Toast.LENGTH_LONG).show();
                                                 return;
                                             }
 
-                                            sessionManager.setBearer("Bearer " + auth.getAccess_token());
+                                            sessionManager.setBearer(auth.getAccess_token());
+                                            sessionManager.setPassword(password);
                                             sessionManager.setUserId(auth.getUser().getId());
 
-                                            supabaseClient.updateProfile(getApplicationContext(), name, new SupabaseClient.SBC_Callback() {
-                                                @Override
-                                                public void onFailure(IOException e) {
-                                                    runOnUiThread(() -> {
-                                                        Log.e("updateProfile:onFailure", e.getLocalizedMessage());
-                                                        Toast.makeText(RegistrationActivity.this, "Ошибка обновления профиля", Toast.LENGTH_SHORT).show();
-                                                    });
-                                                }
-
-                                                @Override
-                                                public void onResponse(String response) {
-                                                    runOnUiThread(() -> {
-                                                        Log.d("updateProfile:onResponse", response);
-                                                        Toast.makeText(RegistrationActivity.this, "Профиль обновлён", Toast.LENGTH_SHORT).show();
-                                                        DataBinding.logined();
-                                                        SharedPreferences sharedPref = getSharedPreferences("user_session", MODE_PRIVATE);
-                                                        if (sharedPref.contains("pin")){
-                                                            sharedPref.edit().remove("pin").apply();
-                                                        }
-                                                        startActivity(new Intent(RegistrationActivity.this, PinRegActivity.class));
-                                                        finish();
-                                                    });
-                                                }
-                                            });
+                                            update(supabaseClient, name);
                                         });
                                     }
                                 });
@@ -168,5 +143,28 @@ public class RegistrationActivity extends AppCompatActivity {
             Toast.makeText(this, getResources().getString(R.string.empty_error),
                     Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void update(SupabaseClient supabaseClient, String name){
+        supabaseClient.updateProfile(getApplicationContext(), name, new SupabaseClient.SBC_Callback() {
+            @Override
+            public void onFailure(IOException e) {
+                update(supabaseClient, name);
+            }
+
+            @Override
+            public void onResponse(String response) {
+                runOnUiThread(() -> {
+                    Log.d("updateProfile:onResponse", response);
+                    DataBinding.logined();
+                    SharedPreferences sharedPref = getSharedPreferences("user_session", MODE_PRIVATE);
+                    if (sharedPref.contains("pin")){
+                        sharedPref.edit().remove("pin").apply();
+                    }
+                    startActivity(new Intent(RegistrationActivity.this, PinRegActivity.class));
+                    finish();
+                });
+            }
+        });
     }
 }

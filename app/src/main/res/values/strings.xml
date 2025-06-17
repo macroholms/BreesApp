@@ -104,4 +104,12 @@
     <string name="letter_not_in_group">Letter not in group</string>
     <string name="success1">Success</string>
     <string name="error">Error</string>
+    <string name="recipient_email">Recipient email</string>
+    <string name="letter_theme">Letter theme</string>
+    <string name="letter_text">Letter text...</string>
+    <string name="you_can_t_transfer_money_to_yourself">You can`t transfer money to yourself</string>
+    <string name="enter_group_name">Enter group name</string>
+    <string name="error_profile_load">Error profile load</string>
+    <string name="error_group_load">Error group load</string>
+    <string name="file_attached">File attached</string>
 </resources>

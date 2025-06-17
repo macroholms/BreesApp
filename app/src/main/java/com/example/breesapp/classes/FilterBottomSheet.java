@@ -34,7 +34,7 @@ import java.util.Locale;
 public class FilterBottomSheet extends BottomSheetDialogFragment {
 
     private static final Date DEFAULT_START_DATE = getDefaultStartDate();
-    private static final Date DEFAULT_END_DATE = new Date(); // текущая дата
+    private static final Date DEFAULT_END_DATE = new Date();
 
     private static Date getDefaultStartDate() {
         Calendar calendar = Calendar.getInstance();

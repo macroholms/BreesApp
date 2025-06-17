@@ -20,7 +20,6 @@ public class ProfileDataFetcher {
         SessionManager sessionManager = new SessionManager(context);
         String userId = sessionManager.getUserId();
         if (userId == null || userId.isEmpty()) {
-            Toast.makeText(context, "Пользователь не авторизован", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -29,9 +28,6 @@ public class ProfileDataFetcher {
         supabaseClient.fetchUserProfile(context, new SupabaseClient.SBC_Callback() {
             @Override
             public void onFailure(IOException e) {
-                new Handler(Looper.getMainLooper()).post(() ->
-                        Toast.makeText(context, "Ошибка загрузки профиля: " + e.getMessage(), Toast.LENGTH_LONG).show()
-                );
             }
 
             @Override
@@ -71,10 +67,8 @@ public class ProfileDataFetcher {
                                         .into(avatar);
                             }
                         } else {
-                            Toast.makeText(context, "Профиль не найден", Toast.LENGTH_SHORT).show();
                         }
                     } catch (Exception e) {
-                        Toast.makeText(context, "Ошибка парсинга данных", Toast.LENGTH_SHORT).show();
                     }
                 });
             }

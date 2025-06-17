@@ -131,7 +131,6 @@ public class PasswordRecoveryThird extends Fragment {
         supabaseClient.verifyPasswordResetOtp(getContext(),email, otp, new SupabaseClient.SBC_Callback() {
             @Override
             public void onFailure(IOException e) {
-                Toast.makeText(getContext(), "Ошибка: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
             @Override

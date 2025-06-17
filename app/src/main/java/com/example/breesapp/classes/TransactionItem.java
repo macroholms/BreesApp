@@ -16,6 +16,6 @@ public class TransactionItem implements DataItem {
 
     @Override
     public int getItemType() {
-        return 0; // Тип элемента для транзакций
+        return 0;
     }
 }
