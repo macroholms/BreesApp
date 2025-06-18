@@ -112,4 +112,7 @@
     <string name="error_profile_load">Error profile load</string>
     <string name="error_group_load">Error group load</string>
     <string name="file_attached">File attached</string>
+    <string name="letter_send_success">Letter send success</string>
+    <string name="error_in_group_create">Error in group create</string>
+    <string name="success_group_create">Success group create</string>
 </resources>

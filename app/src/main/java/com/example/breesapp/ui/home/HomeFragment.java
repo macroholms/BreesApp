@@ -111,12 +111,9 @@ public class HomeFragment extends Fragment {
         supabaseClient.fetchUserProfile(getContext(), new SupabaseClient.SBC_Callback() {
             @Override
             public void onFailure(IOException e) {
-                new Handler(Looper.getMainLooper()).post(() ->
-                        getActivity().runOnUiThread(() ->{
-                            Toast.makeText(getContext(),
-                                    R.string.error_profile_load, Toast.LENGTH_LONG).show();
-                        })
-                );
+                requireActivity().runOnUiThread(()->{
+                    name.setText(getString(R.string.error));
+                });
             }
 
             @Override
@@ -157,6 +154,9 @@ public class HomeFragment extends Fragment {
                                         .into(avatar);
                             }
                         } else {
+                            requireActivity().runOnUiThread(()->{
+                                name.setText(getString(R.string.error));
+                            });
                         }
                     } catch (Exception e) {
                     }

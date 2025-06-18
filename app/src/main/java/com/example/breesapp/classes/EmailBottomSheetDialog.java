@@ -99,6 +99,7 @@ public class EmailBottomSheetDialog extends BottomSheetDialog {
                     public void onFailure(IOException e) {
                         fragment.getActivity().runOnUiThread(()->{
                             btn.setClickable(true);
+                            dismiss();
                             Toast.makeText(getContext(), R.string.error, Toast.LENGTH_SHORT);
                         });
                     }
@@ -106,6 +107,7 @@ public class EmailBottomSheetDialog extends BottomSheetDialog {
                     @Override
                     public void onResponse(String responseBody) {
                         fragment.getActivity().runOnUiThread(()->{
+                            Toast.makeText(getContext(), getContext().getString(R.string.letter_send_success), Toast.LENGTH_LONG).show();
                             dismiss();
                         });
                     }
@@ -116,6 +118,7 @@ public class EmailBottomSheetDialog extends BottomSheetDialog {
                     public void onFailure(IOException e) {
                         fragment.getActivity().runOnUiThread(()->{
                             btn.setClickable(true);
+                            dismiss();
                             Toast.makeText(getContext(), R.string.error, Toast.LENGTH_SHORT);
                         });
                     }
@@ -123,6 +126,7 @@ public class EmailBottomSheetDialog extends BottomSheetDialog {
                     @Override
                     public void onResponse(String responseBody) {
                         fragment.getActivity().runOnUiThread(()->{
+                            Toast.makeText(getContext(), getContext().getString(R.string.letter_send_success), Toast.LENGTH_LONG).show();
                             dismiss();
                         });
                     }

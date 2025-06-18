@@ -1241,10 +1241,10 @@ public class SupabaseClient {
 
         try {
             jsonBody.put("content", content);
-            jsonBody.put("file_url", JSONObject.NULL);
             jsonBody.put("id_sender", sessionManager.getUserId());
             jsonBody.put("recipient_email", recipientEmail);
             jsonBody.put("theme", theme);
+            jsonBody.put("file_url", new JSONObject());
 
         } catch (JSONException e) {
             e.printStackTrace();

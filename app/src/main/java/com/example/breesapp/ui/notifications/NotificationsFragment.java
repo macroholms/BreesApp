@@ -72,6 +72,13 @@ public class NotificationsFragment extends Fragment {
     private List<ElettersGroup> groupList = new ArrayList<>();
 
     private void loadGroups() {
+
+        drawerItems.clear();
+
+        drawerItems.add(new DrawerMenuItem(getString(R.string.inbox), R.drawable.inbox_ic));
+        drawerItems.add(new DrawerMenuItem(getString(R.string.sent), R.drawable.sent_ic));
+        drawerItems.add(new DrawerMenuItem(getString(R.string.starred), R.drawable.star_ic));
+
         supabaseClient.fetchGroupsByUserId(getContext(), new SupabaseClient.SBC_Callback() {
             @Override
             public void onFailure(IOException e) {
@@ -85,6 +92,7 @@ public class NotificationsFragment extends Fragment {
             @Override
             public void onResponse(String responseBody) {
                 try {
+
                     JSONArray array = new JSONArray(responseBody);
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject obj = array.getJSONObject(i);
@@ -154,9 +162,7 @@ public class NotificationsFragment extends Fragment {
         drawerLayout.findViewById(R.id.btn_add_group).setOnClickListener(v -> showCreateGroupDialog());
         drawerLayout.findViewById(R.id.btn_close_drawer).setOnClickListener(v -> drawerLayout.closeDrawers());
 
-        drawerItems.add(new DrawerMenuItem(getString(R.string.inbox), R.drawable.inbox_ic));
-        drawerItems.add(new DrawerMenuItem(getString(R.string.sent), R.drawable.sent_ic));
-        drawerItems.add(new DrawerMenuItem(getString(R.string.starred), R.drawable.star_ic));
+        loadGroups();
 
         drawerAdapter = new DrawerAdapter(
                 drawerItems,
@@ -199,6 +205,7 @@ public class NotificationsFragment extends Fragment {
                                 }
                             }
                         }
+                        groupTittle.setText(item.getGroup().getTitle());
                         adapter.setData(filtered);
                         adapter.notifyDataSetChanged();
                     }
@@ -212,8 +219,6 @@ public class NotificationsFragment extends Fragment {
 
         drawerRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         drawerRecyclerView.setAdapter(drawerAdapter);
-
-        loadGroups();
 
         root.findViewById(R.id.toggle_drawer).setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
@@ -298,6 +303,7 @@ public class NotificationsFragment extends Fragment {
             @Override
             public void onFailure(IOException e) {
                 requireActivity().runOnUiThread(()->{
+                    Toast.makeText(getContext(), R.string.error, Toast.LENGTH_SHORT).show();
                 });
             }
 
@@ -605,10 +611,18 @@ public class NotificationsFragment extends Fragment {
         supabaseClient.addNewGroup(getContext(), Tittle, Color, new SupabaseClient.SBC_Callback() {
             @Override
             public void onFailure(IOException e) {
+                requireActivity().runOnUiThread(()->{
+                    Toast.makeText(requireContext(), requireContext().getString(R.string.error_in_group_create),Toast.LENGTH_LONG).show();
+                });
             }
 
             @Override
             public void onResponse(String responseBody) {
+                requireActivity().runOnUiThread(()->{
+                    groupList.clear();
+                    loadGroups();
+                    Toast.makeText(requireContext(), requireContext().getString(R.string.success_group_create),Toast.LENGTH_LONG).show();
+                });
             }
         });
     }
@@ -639,7 +653,9 @@ public class NotificationsFragment extends Fragment {
                 supabaseClient.deleteGroupWithCleanup(getContext(), item.getGroup().getId(), new SupabaseClient.SBC_Callback() {
                     @Override
                     public void onFailure(IOException e) {
-
+                        requireActivity().runOnUiThread(()->{
+                            Toast.makeText(requireContext(), requireContext().getString(R.string.error), Toast.LENGTH_SHORT);
+                        });
                     }
 
                     @Override
