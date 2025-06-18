@@ -113,4 +113,7 @@
     <string name="error_profile_load">Ошибка загрузки профиля</string>
     <string name="file_attached">Файл выбран</string>
     <string name="error_group_load">Ошибка загрузки групп</string>
+    <string name="letter_send_success">Письмо успешно отправлено</string>
+    <string name="error_in_group_create">Ошибка при создании группы</string>
+    <string name="success_group_create">Успешное создание группы</string>
 </resources>
